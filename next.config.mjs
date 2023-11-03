@@ -3,8 +3,10 @@
  * for Docker builds.
  */
 await import("./src/env.mjs");
-
+// Enable server actions for all pages
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+
+};
 
 export default config;

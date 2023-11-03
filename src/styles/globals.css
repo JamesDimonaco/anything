@@ -1,3 +1,76 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.block {
+  color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(32, 67, 124, 0.4);
+  transition: background-color 0.15s ease-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.block::before {
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: slideGradient 5s linear infinite;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.1) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.block:hover {
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  background-image: radial-gradient(
+    circle at var(--x) var(--y),
+    #0e2d5e 0%,
+    transparent 1000px
+  );
+}
+
+.container {
+  color: #fff;
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  box-shadow: 0 4px 15px rgba(255, 65, 108, 0.2);
+  transition: background-color 0.15s ease-out;
+  border: 2px solid #fff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+
+.container:hover {
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  background-image: radial-gradient(
+    circle at var(--x) var(--y),
+    #0e2d5e 0%,
+    transparent 1000px
+  );
+}
+
+@keyframes slideGradient {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
