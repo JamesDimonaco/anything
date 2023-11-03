@@ -3,6 +3,7 @@
 import type { Channel } from "@prisma/client";
 import { useState } from "react";
 import { api } from "~/trpc/react";
+import { useSession } from "next-auth/react"
 
 interface ChannelBlockProps {
   channel: Channel
@@ -10,7 +11,9 @@ interface ChannelBlockProps {
 
 const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel }) => {
   const [member, setMember] = useState(false);
+  const { data: session } = useSession();
 
+  console.log(session?.user?.id)
   const join = api.channel.join.useMutation({
     onSuccess: () => {
       console.log("success")

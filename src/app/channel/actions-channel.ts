@@ -24,6 +24,8 @@ export async function createOwnChannel() {
   if (!session?.user) return demoChannel();
   const { id } = session.user;
   console.log("id", id);
+  const own = await api.channel.createOwn.mutate()
+  await api.user.goHome.mutate()
+  return own
 
-  return api.channel.createOwn.mutate()
 }

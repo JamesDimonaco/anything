@@ -27,7 +27,9 @@ const Channels = () => {
       {ownChannel && (
         <div>
           <ul>
-            <ChannelBlock channel={ownChannel} />
+            <ChannelBlock channel={ownChannel}
+            
+             />
           </ul>
         </div>
       )}

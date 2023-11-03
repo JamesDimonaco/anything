@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -8,6 +9,9 @@ import { api } from "~/trpc/react";
 export function CreatePost() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const {data: user, status} = useSession();
+
+  const channelId = api.user.getCurrentChannel.useQuery().data?.currentChannelId ?? 420;
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
@@ -20,7 +24,7 @@ export function CreatePost() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost.mutate({ name });
+        createPost.mutate({ name, channelId });
       }}
       className="flex flex-col gap-2"
     >
