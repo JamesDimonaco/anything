@@ -71,15 +71,16 @@ export default async function Home() {
 async function ChannelControl() {
   const publicChannels = await api.channel.getPublic.query()
   const ownChannel = await api.channel.getOwn.query() ?? await createOwnChannel();
+  const currentChannelId = (await api.user.getCurrentChannel.query())?.currentChannelId ?? 420;
   return (
     <>
-    <ChannelBlock channel={ownChannel} />
+    <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel} />
     {publicChannels.length > 0 ? (
       <div>
         <p className="truncate">here are all your channels</p>
         <ul>
           {publicChannels.map((channel) => (
-            <ChannelBlock channel={channel} key={channel.id} />
+            <ChannelBlock currentChannelId={currentChannelId} channel={channel} key={channel.id} />
           ))}
         </ul>
       </div>

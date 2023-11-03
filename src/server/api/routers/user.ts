@@ -5,7 +5,7 @@ export const userRouter = createTRPCRouter({
     return ctx.db.user.findUnique({
       where: { id: ctx.session.user.id },
       select: { currentChannelId: true },
-    });
+    })
   }),
   goHome: protectedProcedure.mutation(async ({ ctx }) => {
     // here we get the channel id of the user's own channel

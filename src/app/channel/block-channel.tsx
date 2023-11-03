@@ -3,17 +3,15 @@
 import type { Channel } from "@prisma/client";
 import { useState } from "react";
 import { api } from "~/trpc/react";
-import { useSession } from "next-auth/react"
 
 interface ChannelBlockProps {
   channel: Channel
+  currentChannelId: number
 }
 
-const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel }) => {
-  const [member, setMember] = useState(false);
-  const { data: session } = useSession();
+const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel, currentChannelId }) => {
+  const [member, setMember] = useState(channel.id === currentChannelId);
 
-  console.log(session?.user?.id)
   const join = api.channel.join.useMutation({
     onSuccess: () => {
       console.log("success")
@@ -38,7 +36,7 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel }) => {
         ${member ? "bg-green-500" : "bg-blue-500"}
         rounded bg-blue-500 h-max px-4 text-lg font-bold text-white hover:bg-blue-700`}
       >
-        Join
+        {member ? "Joined" : "Join"}
       </button>
     </li>
     </form>

@@ -10,7 +10,7 @@ datasource db {
   // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/refgewgwegwegerence/api-reference/prisma-schema-reference#string
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
 }
 
@@ -23,7 +23,7 @@ model Post {
   createdBy   User     @relation(fields: [createdById], references: [id])
   createdById String
   channelId   Int?
-  Channel     Channel? @relation(fields: [channelId], references: [id])
+  channel     Channel? @relation(fields: [channelId], references: [id])
 
   @@index([name])
 }

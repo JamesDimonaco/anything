@@ -9,13 +9,16 @@ import { demoChannel } from "./utilities-channel";
 export async function getChannels(): Promise<{
   publicChannels: Channel[],
   ownChannel: Channel | null,
+  currentChannelId: number | undefined
 }> {
   const publicChannels = await api.channel.getPublic.query()
   const ownChannel = await api.channel.getOwn.query()
+  const currentChannelId = (await api.user.getCurrentChannel.query())?.currentChannelId
 
   return {
     publicChannels,
-    ownChannel
+    ownChannel,
+    currentChannelId
   }
 }
 

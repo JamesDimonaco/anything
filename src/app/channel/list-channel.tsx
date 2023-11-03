@@ -8,12 +8,14 @@ import type { Channel } from "@prisma/client";
 const Channels = () => {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [ownChannel, setOwnChannel] = useState<Channel | null>(null);
+  const [currentChannelId, setCurrentChannelId] = useState<number>(420);
 
   useEffect(() => {
     getChannels()
-      .then(({publicChannels, ownChannel}) => {
+      .then(({publicChannels, ownChannel, currentChannelId}) => {
         setChannels(publicChannels);
         setOwnChannel(ownChannel);
+        setCurrentChannelId(currentChannelId ?? 420);
       })
       .catch((err) => {
         console.log(err);
@@ -27,7 +29,7 @@ const Channels = () => {
       {ownChannel && (
         <div>
           <ul>
-            <ChannelBlock channel={ownChannel}
+            <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel}
             
              />
           </ul>
@@ -38,7 +40,7 @@ const Channels = () => {
         <div>
           <ul>
             {channels.map((channel: Channel) => (
-              <ChannelBlock channel={channel} key={channel.id} />
+              <ChannelBlock currentChannelId={currentChannelId} channel={channel} key={channel.id} />
             ))}
           </ul>
         </div>
