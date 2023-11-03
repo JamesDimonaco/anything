@@ -4,11 +4,10 @@ import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import Block from "./_components/general-block";
 import Container from "./_components/general-container";
-import Channels from "./channel/list-channel";
 import ChannelBlock from "./channel/block-channel";
 import PostBlock from "./post/block-post";
 import { createOwnChannel } from "./channel/actions-channel";
-import { SessionProvider } from "next-auth/react";
+import HomeBlock from "./home/block-home";
 
 const NavBar = async () => {
     const session = await getServerAuthSession();
@@ -44,16 +43,22 @@ export default async function Home() {
 
 </div>);
 
-
+    const currentChannel = (await api.user.getCurrentChannel.query())
+    
+    const currentChannelId = currentChannel?.currentChannelId ?? 420;
   return (
   <div className="bg-black font-mono">
       <Container>
       
           <NavBar />
           <div className="flex flex-row gap-4">
+          <div>
           <Block>
-          <ChannelControl />
+          <ChannelControl currentChannelId={currentChannelId} />
+          
         </Block>
+        <HomeBlock channel={currentChannel} />
+        </div>
         <Block>
           Chat
                 <PostControl />
@@ -68,10 +73,10 @@ export default async function Home() {
   );
 }
 
-async function ChannelControl() {
+async function ChannelControl({ currentChannelId }: { currentChannelId: number}) {
   const publicChannels = await api.channel.getPublic.query()
   const ownChannel = await api.channel.getOwn.query() ?? await createOwnChannel();
-  const currentChannelId = (await api.user.getCurrentChannel.query())?.currentChannelId ?? 420;
+
   return (
     <>
     <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel} />

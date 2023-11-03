@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useRef } from "react";
+import { type FC, useRef } from "react";
 
 const Block: FC<{ className?: string, children: React.ReactNode }> = ({ className, children }) => {
   const blockRef = useRef<HTMLDivElement | null>(null);
@@ -19,7 +19,7 @@ const Block: FC<{ className?: string, children: React.ReactNode }> = ({ classNam
     <div
       ref={blockRef}
       onMouseMove={handleMouseMove}
-      className={`block border-black w-full h-full border-2 m-4 px-4 py-2 ${className}`}
+      className={`block border-black w-full h-max border-2 m-4 px-4 py-2 ${className}`}
     >
       {children}
     </div>
