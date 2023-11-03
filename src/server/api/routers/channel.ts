@@ -61,7 +61,7 @@ export const channelRouter = createTRPCRouter({
       });
     }),
 
- join: protectedProcedure
+  join: protectedProcedure
     .input(z.object({ channelId: z.number().min(1) }))
     .mutation(async ({ ctx, input }) => {
       // also change the user to the new channel
@@ -70,9 +70,20 @@ export const channelRouter = createTRPCRouter({
         data: { currentChannelId: input.channelId },
       });
       return ctx.db.channel.update({
-        where: { id: input.channelId},
+        where: { id: input.channelId },
         data: {
           members: { connect: { id: ctx.session.user.id } },
+        },
+      });
+    }),
+
+  getMembers: protectedProcedure
+    .input(z.object({ channelId: z.number().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.channel.findFirst({
+        where: { id: input.channelId },
+        include: {
+          members: true,
         },
       });
     }),
