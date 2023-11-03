@@ -31,9 +31,6 @@ export const channelRouter = createTRPCRouter({
     });
   }),
   createOwn: protectedProcedure.mutation(async ({ ctx }) => {
-    console.log("ctx.session.user.id", ctx.session.user.id);
-    console.log(ctx);
-
     return ctx.db.channel.create({
       data: {
         name: `${ctx.session.user.name}'s channel`,
@@ -53,9 +50,6 @@ export const channelRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("ctx.session.user.id", ctx.session.user.id);
-      console.log(ctx);
-
       return ctx.db.channel.create({
         data: {
           name: input.name,
@@ -67,36 +61,18 @@ export const channelRouter = createTRPCRouter({
       });
     }),
 
-  addToMembers: protectedProcedure
+ join: protectedProcedure
     .input(
       z.object({
-        channelId: z.number(),
-        userId: z.string(),
+        channelId: z.number().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("ctx.session.user.id", ctx.session.user.id);
-      console.log(ctx);
-
       return ctx.db.channel.update({
-        where: { id: input.channelId },
+        where: { id: input.channelId},
         data: {
-          members: { connect: { id: input.userId } },
+          members: { connect: { id: "cloijg8ep00008zslf9cjp0h7" } },
         },
       });
     }),
-
-  // create: protectedProcedure
-  //   .input(z.object({ name: z.string().min(1) }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     console.log("ctx.session.user.id", ctx.session.user.id);
-  //     console.log(ctx);
-
-  //     return ctx.db.channel.create({
-  //       data: {
-  //         name: input.name,
-  //         createdBy: { connect: { id: ctx.session.user.id } },
-  //       },
-  //     });
-  //   }),
 });

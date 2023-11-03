@@ -3,18 +3,19 @@
 import type { Channel, } from "@prisma/client";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
+import { demoChannel } from "./utilities-channel";
 
-export async function joinChannel(formData: FormData, channel: Channel): Promise<Channel | null> {
-  const session = await getServerAuthSession();
-  if (!session?.user) return null;
-    const { id } = session.user;
-    console.log("id", id);
-    console.log("channel", channel);
-
-    return api.channel.addToMembers.mutate({
+export async function joinChannel(channel: Channel): Promise<Channel> {
+    try {
+      await api.channel.join.mutate({
         channelId: channel.id,
-        userId: id,
-        });
+      })
+      return channel;
+    }
+    catch (err) {
+      console.error(err);
+      return channel;
+    }
 }
 
 export async function getChannels(): Promise<{
@@ -37,16 +38,4 @@ export async function createOwnChannel() {
   console.log("id", id);
 
   return api.channel.createOwn.mutate()
-}
-
-function demoChannel(): Channel {
-  return {
-    id: 420,
-    name: "Demo Channel",
-    public: true,
-    thumbnailImageUrl: "",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    authorId: "demo",
-  }
 }
