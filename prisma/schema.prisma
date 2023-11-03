@@ -19,9 +19,11 @@ model Post {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  channelId Int
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdBy   User    @relation(fields: [createdById], references: [id])
   createdById String
+  channel     Channel @relation(fields: [channelId], references: [id])
 
   @@index([name])
 }
@@ -34,8 +36,11 @@ model Channel {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   members           User[]   @relation("ChannelMembers")
-  author            User     @relation(fields: [authorId], references: [id])
-  authorId          String
+  posts             Post[]
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
   @@index([name])
 }
 
@@ -67,17 +72,17 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  channels      Channel[] @relation("ChannelMembers")
-  channelsCreated       Channel[]
-  status       String?
+  id              String    @id @default(cuid())
+  name            String?
+  email           String?   @unique
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  posts           Post[]
+  channels        Channel[] @relation("ChannelMembers")
+  channelsCreated Channel[]
+  status          String?
 }
 
 model VerificationToken {
