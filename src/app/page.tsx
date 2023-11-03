@@ -46,14 +46,21 @@ export default async function Home() {
       </div>
     );
 
+  const currentChannel = await api.user.getCurrentChannel.query();
+
+  const currentChannelId = currentChannel?.currentChannelId ?? 420;
+
   return (
     <div className="bg-black font-mono">
       <Container>
         <NavBar />
         <div className="flex flex-row gap-4">
-          <Block>
-            <ChannelControl />
-          </Block>
+          <div>
+            <Block>
+              <ChannelControl currentChannelId={currentChannelId} />
+            </Block>
+            <HomeBlock channel={currentChannel} />
+          </div>
           <Block>
             Chat
             <PostControl />
@@ -61,10 +68,6 @@ export default async function Home() {
           <Block>
             Members
             <MembersInChannel />
-            {/* <p>
-              You haven&rsquo;t added any friends yet. Search and connect with
-              them to start your journey!
-            </p> */}
           </Block>
         </div>
       </Container>
@@ -72,6 +75,19 @@ export default async function Home() {
   );
 }
 
+<!-- async function ChannelControl({
+  currentChannelId,
+}: {
+  currentChannelId: number;
+}) {
+  const publicChannels = await api.channel.getPublic.query();
+  const ownChannel =
+    (await api.channel.getOwn.query()) ?? (await createOwnChannel());
+
+  return (
+    <>
+      <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel} />
+      {publicChannels.length > 0 ? ( -->
 async function MembersInChannel() {
   let members;
 
