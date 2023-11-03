@@ -10,90 +10,103 @@ import { createOwnChannel } from "./channel/actions-channel";
 import HomeBlock from "./home/block-home";
 
 const NavBar = async () => {
-    const session = await getServerAuthSession();
+  const session = await getServerAuthSession();
   return (
-    <div className="w-full h-max flex justify-between items-center bg-black/50 text-white/80 px-4 py-2">
+    <div className="flex h-max w-full items-center justify-between bg-black/50 px-4 py-2 text-white/80">
       <div className="flex gap-4">
         <Link href="/">
-          <p className="text-white/80 hover:text-white transition">Project Y</p>
+          <p className="text-white/80 transition hover:text-white">Project Y</p>
         </Link>
       </div>
-                  <p className="text-center text-2xl text-white">
-              {session && <span>y:{session.user?.name}:home</span>}
-            </p>
+      <p className="text-center text-2xl text-white">
+        {session && <span>y:{session.user?.name}:home</span>}
+      </p>
       <div className="flex gap-4">
-              <Link href="/about">
-          <p className="text-white/80 hover:text-white transition">Settings</p>
+        <Link href="/about">
+          <p className="text-white/80 transition hover:text-white">Settings</p>
         </Link>
-        <Link href={`/api/auth/${session ? 'signout' : 'signin'}`}>
-          <p className="text-white/80 hover:text-white transition">{session ? "Sign out" : "Sign in"}</p>
+        <Link href={`/api/auth/${session ? "signout" : "signin"}`}>
+          <p className="text-white/80 transition hover:text-white">
+            {session ? "Sign out" : "Sign in"}
+          </p>
         </Link>
       </div>
     </div>
   );
-}
+};
 
 export default async function Home() {
-      const session = await getServerAuthSession();
-  if (!session?.user) return(
+  const session = await getServerAuthSession();
+  if (!session?.user)
+    return (
+      <div className="bg-black font-mono">
+        <Container>
+          <NavBar />
+        </Container>
+      </div>
+    );
+
+  const currentChannel = await api.user.getCurrentChannel.query();
+
+  const currentChannelId = currentChannel?.currentChannelId ?? 420;
+  return (
     <div className="bg-black font-mono">
       <Container>
-            <NavBar />
-                  </Container>
-
-</div>);
-
-    const currentChannel = (await api.user.getCurrentChannel.query())
-    
-    const currentChannelId = currentChannel?.currentChannelId ?? 420;
-  return (
-  <div className="bg-black font-mono">
-      <Container>
-      
-          <NavBar />
-          <div className="flex flex-row gap-4">
+        <NavBar />
+        <div className="flex flex-row gap-4">
           <div>
+            <Block>
+              <ChannelControl currentChannelId={currentChannelId} />
+            </Block>
+            <HomeBlock channel={currentChannel} />
+          </div>
           <Block>
-          <ChannelControl currentChannelId={currentChannelId} />
-          
-        </Block>
-        <HomeBlock channel={currentChannel} />
-        </div>
-        <Block>
-          Chat
-                <PostControl />
-        </Block>
-        <Block>
-          Friends
-           <p>You haven&rsquo;t added any friends yet. Search and connect with them to start your journey!</p>
-        </Block>
+            Chat
+            <PostControl />
+          </Block>
+          <Block>
+            Friends
+            <p>
+              You haven&rsquo;t added any friends yet. Search and connect with
+              them to start your journey!
+            </p>
+          </Block>
         </div>
       </Container>
-</div>
+    </div>
   );
 }
 
-async function ChannelControl({ currentChannelId }: { currentChannelId: number}) {
-  const publicChannels = await api.channel.getPublic.query()
-  const ownChannel = await api.channel.getOwn.query() ?? await createOwnChannel();
+async function ChannelControl({
+  currentChannelId,
+}: {
+  currentChannelId: number;
+}) {
+  const publicChannels = await api.channel.getPublic.query();
+  const ownChannel =
+    (await api.channel.getOwn.query()) ?? (await createOwnChannel());
 
   return (
     <>
-    <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel} />
-    {publicChannels.length > 0 ? (
-      <div>
-        <p className="truncate">here are all your channels</p>
-        <ul>
-          {publicChannels.map((channel) => (
-            <ChannelBlock currentChannelId={currentChannelId} channel={channel} key={channel.id} />
-          ))}
-        </ul>
-      </div>
-    ) : (
-      <p>You have no channels yet.</p>
-    )}
+      <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel} />
+      {publicChannels.length > 0 ? (
+        <div>
+          <p className="truncate">here are all your channels</p>
+          <ul>
+            {publicChannels.map((channel) => (
+              <ChannelBlock
+                currentChannelId={currentChannelId}
+                channel={channel}
+                key={channel.id}
+              />
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p>You have no channels yet.</p>
+      )}
     </>
-  )
+  );
 }
 
 async function PostControl() {
