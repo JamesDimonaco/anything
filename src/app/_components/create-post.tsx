@@ -1,17 +1,17 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { api } from "~/trpc/react";
 
-export function CreatePost() {
+export function CreatePost({ home = false}) {
   const router = useRouter();
   const [name, setName] = useState("");
-  const {data: user, status} = useSession();
 
-  const channelId = api.user.getCurrentChannel.useQuery().data?.currentChannelId ?? 420;
+  const channelId = 
+  home ? api.user.getOwnChannelId.useQuery().data?.currentChannelId ?? 420 :
+  api.user.getCurrentChannel.useQuery().data?.currentChannelId ?? 420;
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
