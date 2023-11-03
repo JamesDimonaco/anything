@@ -49,6 +49,7 @@ export default async function Home() {
   const currentChannel = await api.user.getCurrentChannel.query();
 
   const currentChannelId = currentChannel?.currentChannelId ?? 420;
+
   return (
     <div className="bg-black font-mono">
       <Container>
@@ -65,11 +66,8 @@ export default async function Home() {
             <PostControl />
           </Block>
           <Block>
-            Friends
-            <p>
-              You haven&rsquo;t added any friends yet. Search and connect with
-              them to start your journey!
-            </p>
+            Members
+            <MembersInChannel />
           </Block>
         </div>
       </Container>
@@ -77,7 +75,7 @@ export default async function Home() {
   );
 }
 
-async function ChannelControl({
+<!-- async function ChannelControl({
   currentChannelId,
 }: {
   currentChannelId: number;
@@ -89,7 +87,68 @@ async function ChannelControl({
   return (
     <>
       <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel} />
-      {publicChannels.length > 0 ? (
+      {publicChannels.length > 0 ? ( -->
+async function MembersInChannel() {
+  let members;
+
+  try {
+    const userData = await api.user.getCurrentChannel.query();
+    const data = await api.channel.getMembers.query({
+      channelId: userData?.currentChannelId ?? 420,
+    });
+
+    members = data ? data.members : null;
+  } catch (error) {
+    console.error("Failed to fetch members", error);
+    members = null;
+  }
+
+  if (!members) {
+    return <p>No members found or an error occurred.</p>;
+  }
+
+  return (
+    <div>
+      {members.map((member) => (
+        <div key={member.id}>
+          <p>{member.name}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+async function ChannelControl() {
+  let publicChannels;
+  let ownChannel;
+  let currentChannelId: number;
+
+  try {
+    publicChannels = await api.channel.getPublic.query();
+    ownChannel =
+      (await api.channel.getOwn.query()) ?? (await createOwnChannel());
+
+    const currentChannelData = await api.user.getCurrentChannel.query();
+    if (!currentChannelData) {
+      throw new Error("Current channel data is null");
+    }
+    currentChannelId = currentChannelData.currentChannelId;
+  } catch (error) {
+    console.error("Failed to fetch channel data", error);
+    // You should decide how to handle this error case
+    // Maybe set the variables to defaults or return a special error component
+    return <p>Error loading channels.</p>;
+  }
+
+  return (
+    <>
+      {ownChannel && (
+        <ChannelBlock
+          currentChannelId={currentChannelId}
+          channel={ownChannel}
+        />
+      )}
+      {publicChannels && publicChannels.length > 0 ? (
         <div>
           <p className="truncate">here are all your channels</p>
           <ul>
