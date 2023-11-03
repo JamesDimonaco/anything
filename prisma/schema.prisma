@@ -30,6 +30,7 @@ model Channel {
   id                Int      @id @default(autoincrement())
   name              String
   thumbnailImageUrl String
+  public            Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   members           User[]   @relation("ChannelMembers")
