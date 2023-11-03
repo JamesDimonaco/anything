@@ -75,19 +75,6 @@ export default async function Home() {
   );
 }
 
-<!-- async function ChannelControl({
-  currentChannelId,
-}: {
-  currentChannelId: number;
-}) {
-  const publicChannels = await api.channel.getPublic.query();
-  const ownChannel =
-    (await api.channel.getOwn.query()) ?? (await createOwnChannel());
-
-  return (
-    <>
-      <ChannelBlock currentChannelId={currentChannelId} channel={ownChannel} />
-      {publicChannels.length > 0 ? ( -->
 async function MembersInChannel() {
   let members;
 
