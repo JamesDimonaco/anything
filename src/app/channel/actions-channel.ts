@@ -29,3 +29,24 @@ export async function getChannels(): Promise<{
     ownChannel
   }
 }
+
+export async function createOwnChannel() {
+  const session = await getServerAuthSession();
+  if (!session?.user) return demoChannel();
+  const { id } = session.user;
+  console.log("id", id);
+
+  return api.channel.createOwn.mutate()
+}
+
+function demoChannel(): Channel {
+  return {
+    id: 420,
+    name: "Demo Channel",
+    public: true,
+    thumbnailImageUrl: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    authorId: "demo",
+  }
+}

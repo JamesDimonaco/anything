@@ -6,6 +6,8 @@ import Block from "./_components/general-block";
 import Container from "./_components/general-container";
 import { Post } from "@prisma/client";
 import Channels from "./channel/list-channel";
+import ChannelBlock from "./channel/block-channel";
+import { createOwnChannel } from "./channel/actions-channel";
 
 const NavBar = async () => {
     const session = await getServerAuthSession();
@@ -42,26 +44,34 @@ const Post = ({ post, }: { post: Post }) => {
   );
 }
 
-export default async function Home() {
-  const hello = await api.post.hello.query({ text: "from tRPC" });
+export default function Home() {
   return (
-  <div className="bg-black">
+  <div className="bg-black font-mono">
       <Container>
       
           <NavBar />
           <div className="flex flex-row gap-4">
-          <Channels />
+          <ChannelControl />
         <Block>
           Chat
                 <MessageControl />
         </Block>
         <Block>
           Friends
+           <p>You haven&rsquo;t added any friends yet. Search and connect with them to start your journey!</p>
         </Block>
         </div>
       </Container>
 </div>
   );
+}
+
+async function ChannelControl() {
+  const publicChannels = await api.channel.getPublic.query()
+  const ownChannel = await api.channel.getOwn.query() ?? await createOwnChannel();
+  return (
+    <ChannelBlock channel={ownChannel} />
+  )
 }
 
 async function MessageControl() {
@@ -80,13 +90,6 @@ async function MessageControl() {
             <Post key={post.id} post={post} />
           ))}
         </div>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
-
-
-      {latestPost ? (
-        <p className="truncate">Your most recent post: {latestPost.name}</p>
       ) : (
         <p>You have no posts yet.</p>
       )}

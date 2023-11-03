@@ -17,11 +17,11 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel }) => {
 
   return (
     <form action={(e) => joinChannel(e, channel)}>
-    <li key={channel.id} className="flex w-72 justify-between text-xl">
+    <li key={channel.id} className="flex w-72  h-96 justify-between text-xl">
       {channel.name}
       <button
       type="submit"
-        className="rounded bg-blue-500 px-4 text-lg font-bold text-white hover:bg-blue-700"
+        className="rounded bg-blue-500 h-max px-4 text-lg font-bold text-white hover:bg-blue-700"
       >
         Join
       </button>

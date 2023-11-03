@@ -24,24 +24,26 @@ export const channelRouter = createTRPCRouter({
   }),
   getOwn: protectedProcedure.query(({ ctx }) => {
     return ctx.db.channel.findFirst({
-      where: { authorId: ctx.session.user.id }
+      where: { authorId: ctx.session.user.id },
+      include: {
+        members: true,
+      },
     });
   }),
-  createOwn: protectedProcedure
-    .mutation(async ({ ctx }) => {
-      console.log("ctx.session.user.id", ctx.session.user.id);
-      console.log(ctx);
+  createOwn: protectedProcedure.mutation(async ({ ctx }) => {
+    console.log("ctx.session.user.id", ctx.session.user.id);
+    console.log(ctx);
 
-      return ctx.db.channel.create({
-        data: {
-          name: `${ctx.session.user.name}'s channel`,
-          public: true,
-          thumbnailImageUrl: "",
-          author: { connect: { id: ctx.session.user.id } },
-          members: { connect: { id: ctx.session.user.id } },
-        },
-      })
-    }),
+    return ctx.db.channel.create({
+      data: {
+        name: `${ctx.session.user.name}'s channel`,
+        public: true,
+        thumbnailImageUrl: "",
+        author: { connect: { id: ctx.session.user.id } },
+        members: { connect: { id: ctx.session.user.id } },
+      },
+    });
+  }),
   create: protectedProcedure
     .input(
       z.object({
@@ -65,12 +67,14 @@ export const channelRouter = createTRPCRouter({
       });
     }),
 
-    addToMembers: protectedProcedure.input(
+  addToMembers: protectedProcedure
+    .input(
       z.object({
         channelId: z.number(),
         userId: z.string(),
       }),
-    ).mutation(async ({ ctx, input }) => {
+    )
+    .mutation(async ({ ctx, input }) => {
       console.log("ctx.session.user.id", ctx.session.user.id);
       console.log(ctx);
 
