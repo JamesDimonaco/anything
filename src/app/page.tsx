@@ -48,8 +48,6 @@ export default async function Home() {
 
   const currentChannel = await api.user.getCurrentChannel.query();
 
-  const currentChannelId = currentChannel?.currentChannelId ?? 420;
-
   return (
     <div className="bg-black font-mono">
       <Container>
@@ -57,7 +55,7 @@ export default async function Home() {
         <div className="flex flex-row gap-4">
           <div>
             <Block>
-              <ChannelControl currentChannelId={currentChannelId} />
+              <ChannelControl />
             </Block>
             <HomeBlock channel={currentChannel} />
           </div>
