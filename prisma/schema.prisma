@@ -83,6 +83,7 @@ model User {
   channelsCreated  Channel[]
   status           String?
   currentChannelId Int       @default(420)
+  homeChannelId    Int       @default(420)
 }
 
 model VerificationToken {
