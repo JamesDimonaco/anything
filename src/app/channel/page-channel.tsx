@@ -1,5 +1,4 @@
 import Link from "next/link";
-import router from "next/router";
 
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";

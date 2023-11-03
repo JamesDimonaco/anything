@@ -62,16 +62,12 @@ export const channelRouter = createTRPCRouter({
     }),
 
  join: protectedProcedure
-    .input(
-      z.object({
-        channelId: z.number().min(1),
-      }),
-    )
+    .input(z.object({ channelId: z.number().min(1) }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.channel.update({
         where: { id: input.channelId},
         data: {
-          members: { connect: { id: "cloijg8ep00008zslf9cjp0h7" } },
+          members: { connect: { id: ctx.session.user.id } },
         },
       });
     }),

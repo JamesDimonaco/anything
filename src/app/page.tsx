@@ -4,9 +4,9 @@ import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import Block from "./_components/general-block";
 import Container from "./_components/general-container";
-import { Post } from "@prisma/client";
 import Channels from "./channel/list-channel";
 import ChannelBlock from "./channel/block-channel";
+import ChatBlock from "./chat/block-chat";
 import { createOwnChannel } from "./channel/actions-channel";
 
 const NavBar = async () => {
@@ -33,17 +33,6 @@ const NavBar = async () => {
   );
 }
 
-const Post = ({ post, }: { post: Post }) => {
-  return (
-    <div className="flex justify-between items-center bg-black/50 text-white/80 px-4 py-2">
-      <p className="text-white/80 hover:text-white transition">{post.name}</p>
-      <Link href={`/posts/${post.id}`}>
-        <p className="text-white/80 hover:text-white transition">Delete</p>
-      </Link>
-    </div>
-  );
-}
-
 export default function Home() {
   return (
   <div className="bg-black font-mono">
@@ -51,7 +40,9 @@ export default function Home() {
       
           <NavBar />
           <div className="flex flex-row gap-4">
+          <Block>
           <ChannelControl />
+        </Block>
         <Block>
           Chat
                 <MessageControl />
@@ -70,15 +61,25 @@ async function ChannelControl() {
   const publicChannels = await api.channel.getPublic.query()
   const ownChannel = await api.channel.getOwn.query() ?? await createOwnChannel();
   return (
+    <>
     <ChannelBlock channel={ownChannel} />
+    {publicChannels.length > 0 ? (
+      <div>
+        <p className="truncate">here are all your channels</p>
+        <ul>
+          {publicChannels.map((channel) => (
+            <ChannelBlock channel={channel} key={channel.id} />
+          ))}
+        </ul>
+      </div>
+    ) : (
+      <p>You have no channels yet.</p>
+    )}
+    </>
   )
 }
 
 async function MessageControl() {
-  const session = await getServerAuthSession();
-  if (!session?.user) return null;
-
-  const latestPost = await api.post.getLatest.query();
   const posts = await api.post.getAll.query();
 
   return (
@@ -87,7 +88,7 @@ async function MessageControl() {
         <div className="flex flex-col gap-2">
           <p>Your posts:</p>
           {posts.map((post) => (
-            <Post key={post.id} post={post} />
+            <ChatBlock key={post.id} post={post} />
           ))}
         </div>
       ) : (

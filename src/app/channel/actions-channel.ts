@@ -5,18 +5,6 @@ import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import { demoChannel } from "./utilities-channel";
 
-export async function joinChannel(channel: Channel): Promise<Channel> {
-    try {
-      await api.channel.join.mutate({
-        channelId: channel.id,
-      })
-      return channel;
-    }
-    catch (err) {
-      console.error(err);
-      return channel;
-    }
-}
 
 export async function getChannels(): Promise<{
   publicChannels: Channel[],
