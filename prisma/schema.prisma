@@ -34,6 +34,7 @@ model Channel {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   members           User[]   @relation("ChannelMembers")
+
   author            User     @relation(fields: [authorId], references: [id])
   authorId          String
   @@index([name])
@@ -78,6 +79,7 @@ model User {
   channels      Channel[] @relation("ChannelMembers")
   channelsCreated       Channel[]
   status       String?
+  currentChannelId    Int @default(420)
 }
 
 model VerificationToken {

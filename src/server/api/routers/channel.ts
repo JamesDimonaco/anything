@@ -64,6 +64,11 @@ export const channelRouter = createTRPCRouter({
  join: protectedProcedure
     .input(z.object({ channelId: z.number().min(1) }))
     .mutation(async ({ ctx, input }) => {
+      // also change the user to the new channel
+      await ctx.db.user.update({
+        where: { id: ctx.session.user.id },
+        data: { currentChannelId: input.channelId },
+      });
       return ctx.db.channel.update({
         where: { id: input.channelId},
         data: {

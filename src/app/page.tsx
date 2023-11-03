@@ -6,8 +6,9 @@ import Block from "./_components/general-block";
 import Container from "./_components/general-container";
 import Channels from "./channel/list-channel";
 import ChannelBlock from "./channel/block-channel";
-import ChatBlock from "./chat/block-chat";
+import PostBlock from "./post/block-post";
 import { createOwnChannel } from "./channel/actions-channel";
+import { SessionProvider } from "next-auth/react";
 
 const NavBar = async () => {
     const session = await getServerAuthSession();
@@ -55,7 +56,7 @@ export default async function Home() {
         </Block>
         <Block>
           Chat
-                <MessageControl />
+                <PostControl />
         </Block>
         <Block>
           Friends
@@ -89,7 +90,7 @@ async function ChannelControl() {
   )
 }
 
-async function MessageControl() {
+async function PostControl() {
   const posts = await api.post.getAll.query();
 
   return (
@@ -98,7 +99,7 @@ async function MessageControl() {
         <div className="flex flex-col gap-2">
           <p>Your posts:</p>
           {posts.map((post) => (
-            <ChatBlock key={post.id} post={post} />
+            <PostBlock key={post.id} post={post} />
           ))}
         </div>
       ) : (
