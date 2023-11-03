@@ -27,7 +27,7 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel }) => {
       join.mutate({ channelId });
       }}
     >
-    <li key={channel?.id} className="flex w-72  h-96 justify-between text-xl">
+    <li key={channel?.id} className="flex w-72  h-36 justify-between text-xl">
       {channel?.name}
       <button
       type="submit"

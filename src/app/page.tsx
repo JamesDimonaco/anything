@@ -25,7 +25,7 @@ const NavBar = async () => {
               <Link href="/about">
           <p className="text-white/80 hover:text-white transition">Settings</p>
         </Link>
-        <Link href="/api/auth/signin">
+        <Link href={`/api/auth/${session ? 'signout' : 'signin'}`}>
           <p className="text-white/80 hover:text-white transition">{session ? "Sign out" : "Sign in"}</p>
         </Link>
       </div>
@@ -33,7 +33,17 @@ const NavBar = async () => {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+      const session = await getServerAuthSession();
+  if (!session?.user) return(
+    <div className="bg-black font-mono">
+      <Container>
+            <NavBar />
+                  </Container>
+
+</div>);
+
+
   return (
   <div className="bg-black font-mono">
       <Container>
