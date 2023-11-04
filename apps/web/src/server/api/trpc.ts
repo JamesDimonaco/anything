@@ -119,6 +119,25 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+/** Middleware to extend ctx to include the users current channel */
+export const withCurrentChannel = t.middleware(async ({ ctx, next }) => {
+  if(!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const user = await ctx.db.user.findUnique({
+    where: { id: ctx.session!.user.id },
+    select: { currentChannelId: true},
+  });
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user, currentChannelId: user?.currentChannelId },
+      currentChannelId: user?.currentChannelId
+    },
+  });
+});
+
 /**
  * Protected (authenticated) procedure
  *
