@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import Block from "./_components/general-block";
 import Container from "./_components/general-container";
-import ChannelBlock from "./channel/block-channel";
-import PostBlock from "./post/block-post";
-import { createOwnChannel } from "./channel/actions-channel";
 import HomeBlock from "./home/block-home";
+import ChannelControl from "./channel/control-channels";
+import PostControl from "./post/control-post";
+import NearbyControl from "./nearby/nearby-control";
 
 const NavBar = async () => {
   const session = await getServerAuthSession();
@@ -54,18 +53,16 @@ export default async function Home() {
         <NavBar />
         <div className="flex flex-row gap-4">
           <div>
-            <Block>
               <ChannelControl />
-            </Block>
             <HomeBlock channel={currentChannel} />
           </div>
           <Block>
-            Chat
-            <PostControl />
+            Chatting in 
+            <PostControl channel={currentChannel} />
           </Block>
           <Block>
             Members
-            <MembersInChannel />
+            <NearbyControl />
           </Block>
         </div>
       </Container>
@@ -73,103 +70,7 @@ export default async function Home() {
   );
 }
 
-async function MembersInChannel() {
-  let members;
 
-  try {
-    const userData = await api.user.getCurrentChannel.query();
-    const data = await api.channel.getMembers.query({
-      channelId: userData?.currentChannelId ?? 420,
-    });
 
-    members = data ? data.members : null;
-  } catch (error) {
-    console.error("Failed to fetch members", error);
-    members = null;
-  }
 
-  if (!members) {
-    return <p>No members found or an error occurred.</p>;
-  }
 
-  return (
-    <div>
-      {members.map((member) => (
-        <div key={member.id}>
-          <p>{member.name}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-async function ChannelControl() {
-  let publicChannels;
-  let ownChannel;
-  let currentChannelId: number;
-
-  try {
-    publicChannels = await api.channel.getPublic.query();
-    ownChannel =
-      (await api.channel.getOwn.query()) ?? (await createOwnChannel());
-
-    const currentChannelData = await api.user.getCurrentChannel.query();
-    if (!currentChannelData) {
-      throw new Error("Current channel data is null");
-    }
-    currentChannelId = currentChannelData.currentChannelId;
-  } catch (error) {
-    console.error("Failed to fetch channel data", error);
-    // You should decide how to handle this error case
-    // Maybe set the variables to defaults or return a special error component
-    return <p>Error loading channels.</p>;
-  }
-
-  return (
-    <>
-      {ownChannel && (
-        <ChannelBlock
-          currentChannelId={currentChannelId}
-          channel={ownChannel}
-        />
-      )}
-      {publicChannels && publicChannels.length > 0 ? (
-        <div>
-          <p className="truncate">here are all your channels</p>
-          <ul>
-            {publicChannels.map((channel) => (
-              <ChannelBlock
-                currentChannelId={currentChannelId}
-                channel={channel}
-                key={channel.id}
-              />
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <p>You have no channels yet.</p>
-      )}
-    </>
-  );
-}
-
-async function PostControl() {
-  const posts = await api.post.getAll.query();
-
-  return (
-    <div className="w-full max-w-xs">
-      {posts.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          <p>Your posts:</p>
-          {posts.map((post) => (
-            <PostBlock key={post.id} post={post} />
-          ))}
-        </div>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
-
-      <CreatePost />
-    </div>
-  );
-}

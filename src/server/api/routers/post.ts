@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
+  withCurrentChannel,
 } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
@@ -15,13 +16,14 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1), channelId: z.number().min(1) }))
+  create: protectedProcedure.use(withCurrentChannel)
+    .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.post.create({
         data: {
           name: input.name,
           createdBy: { connect: { id: ctx.session.user.id } },
+          channel: { connect: { id: ctx.session.currentChannelId } },
         },
       });
     }),
@@ -33,10 +35,11 @@ export const postRouter = createTRPCRouter({
     });
   }),
 
-  getAll: protectedProcedure.query(({ ctx }) => {
+  getAll: protectedProcedure.use(withCurrentChannel)
+  .query(({ ctx }) => {
     return ctx.db.post.findMany({
       orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
+      where: { channelId: ctx.session.currentChannelId },
     });
   }),
 

@@ -2,7 +2,7 @@
 
 import Block from "../_components/general-block";
 import PostBlock from "../post/block-post";
-import { CreatePost } from "../_components/create-post";
+import { CreatePost } from "../post/create-post";
 
 interface HomeBlockProps {
   channel:  {
@@ -33,7 +33,7 @@ const HomeBlock: React.FC<HomeBlockProps> = ({ channel }) => {
             ) : (
                 <p>You have no posts yet.</p>
             )}
-            <CreatePost home={true} />
+            <CreatePost />
         </Block>
         
         );

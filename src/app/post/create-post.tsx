@@ -5,13 +5,9 @@ import { useState } from "react";
 
 import { api } from "~/trpc/react";
 
-export function CreatePost({ home = false}) {
+export function CreatePost() {
   const router = useRouter();
   const [name, setName] = useState("");
-
-  const channelId = 
-  home ? api.user.getOwnChannelId.useQuery().data?.currentChannelId ?? 420 :
-  api.user.getCurrentChannel.useQuery().data?.currentChannelId ?? 420;
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
@@ -24,7 +20,7 @@ export function CreatePost({ home = false}) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost.mutate({ name, channelId });
+        createPost.mutate({ name });
       }}
       className="flex flex-col gap-2"
     >

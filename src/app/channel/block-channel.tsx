@@ -1,21 +1,33 @@
 "use client";
 
 import type { Channel } from "@prisma/client";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 
 interface ChannelBlockProps {
   channel: Channel
   currentChannelId: number
+  setCurrentChannelId: Dispatch<SetStateAction<number>>
 }
 
-const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel, currentChannelId }) => {
-  const [member, setMember] = useState(channel.id === currentChannelId);
+const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel, currentChannelId, setCurrentChannelId }) => {
+  const [active, setActive] = useState(channel.id === currentChannelId);
+  const router = useRouter();
+
+    useEffect(() => {
+      setActive(channel.id === currentChannelId);
+    }
+    , [currentChannelId, channel.id]);
+  
+  
 
   const join = api.channel.join.useMutation({
     onSuccess: () => {
       console.log("success")
-      setMember(true);
+      setActive(true);
+      router.refresh();
+      setCurrentChannelId(channel.id);
     },
   });
 
@@ -33,10 +45,10 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel, currentChannelId }
       <button
       type="submit"
         className={`
-        ${member ? "bg-green-500" : "bg-blue-500"}
+        ${active ? "bg-green-500" : "bg-blue-500"}
         rounded bg-blue-500 h-max px-4 text-lg font-bold text-white hover:bg-blue-700`}
       >
-        {member ? "Joined" : "Join"}
+        {active ? "Joined" : "Join"}
       </button>
     </li>
     </form>
