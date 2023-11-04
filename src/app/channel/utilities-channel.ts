@@ -24,9 +24,9 @@ export const timeSince = (dateString: string) => {
 
     if (seconds <= 30) return `30 seconds ago`;
 
-    interval = seconds / 3600;
-    if (interval >= 1) {
-        if (interval === 1) return `1 hour ago`;
+    interval = Math.floor(seconds / 3600);
+    if (interval === 1) return `1 hour ago`;
+    if (interval > 1) {
         return `${Math.floor(interval)} hours ago`;
     }
 

@@ -24,7 +24,9 @@ const PostBlock = ({
   return (
     <div className="flex w-full justify-between">
       <p className="text-white/80 transition hover:text-white">
-        {timeSince(post.createdAt.toISOString())} {post.createdBy.name}: {post.name}
+        <span className="uppercase text-xs border p-1 rounded-xl">{timeSince(post.createdAt.toISOString())}</span> 
+        
+        <span className="font-bold"> {post.createdBy.name}</span>: <span className="">{post.name}</span>
       </p>
       {/* delete button */}
       <DeletePost post={post} />

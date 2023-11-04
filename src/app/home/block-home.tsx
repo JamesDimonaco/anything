@@ -1,4 +1,5 @@
 import Block from "../_components/general-block";
+import TextHeaderGeneral from "../_components/general-text-header";
 import PostBlock from "../post/block-post";
 import { CreatePost } from "../post/create-post";
 
@@ -27,21 +28,22 @@ interface HomeBlockProps {
 
 const HomeBlock: React.FC<HomeBlockProps> = ({ channel }) => {
   return (
-    <Block className="flex flex-col items-center justify-between px-4 py-2 text-white/80">
-      <p>My Channel</p>
+    <Block className="px-4 py-2 text-white/80">
+      <TextHeaderGeneral text={"My Channel"} />
       {channel && channel.posts.length > 0 ? (
-        <div>
-          <ul>
+        <div className="flex flex-col items-center justify-between mb-4">
+          <ul className="w-full">
             {channel.posts.map((post) => (
-              <PostBlock
-                post={post}
-                key={post.id}
-              />
+              <li key={post.id} className="mb-3">
+                <PostBlock post={post} />
+              </li>
             ))}
           </ul>
         </div>
       ) : (
-        <p>You have no posts yet.</p>
+        <div className="my-4 text-center">
+          <p>You have no posts yet. Why not create one?</p>
+        </div>
       )}
       <CreatePost />
     </Block>

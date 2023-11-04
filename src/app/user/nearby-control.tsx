@@ -1,4 +1,5 @@
 import { api } from "~/trpc/server";
+import UserBlock from "./block-user";
 
 async function NearbyControl() {
   let members;
@@ -23,7 +24,7 @@ async function NearbyControl() {
     <div>
       {members.map((member) => (
         <div key={member.id}>
-          <p>{member.name}</p>
+          <UserBlock user={member} />
         </div>
       ))}
     </div>

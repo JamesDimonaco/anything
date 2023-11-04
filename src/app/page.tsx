@@ -5,7 +5,7 @@ import Block from "./_components/general-block";
 import Container from "./_components/general-container";
 import ChannelControl from "./channel/control-channels";
 import PostControl from "./post/control-post";
-import NearbyControl from "./nearby/nearby-control";
+import NearbyControl from "./user/nearby-control";
 import Image from "next/image";
 import TextHeaderGeneral from "./_components/general-text-header";
 import HomeControl from "./home/control-home";
@@ -13,10 +13,10 @@ import HomeControl from "./home/control-home";
 const NavBar = async () => {
   const session = await getServerAuthSession();
   return (
-    <div className="border-3 flex h-max w-5/6 items-center justify-between rounded-xl border-gray-400 bg-opacity-10 bg-gradient-to-br from-gray-900 px-4 py-2 text-white/80">
+    <div className="border-2 flex h-max w-5/6 mx-auto items-center justify-between rounded-xl border-white px-4 py-2 my-2">
       <div className="flex gap-4">
         <Link href="/">
-          <p className="text-white/80 transition hover:text-white">Project Y</p>
+          <p className="text-white/80 transition hover:text-white">Y Message | Simple, Free, Forever.</p>
         </Link>
       </div>
       <p className="text-center text-2xl text-white">
@@ -55,26 +55,34 @@ export default async function Home() {
     );
 
   return (
-    <Container className="bg-black">
-      <div className="absolute left-0 top-0 z-0 h-screen w-full bg-opacity-10 bg-gradient-to-bl from-gray-900 object-cover"></div>
+    <Container className="flex h-screen flex-col bg-black">
 
-      <div className="mt-4 flex w-full justify-center">
-        <NavBar />
-      </div>
-      <div className="z-1 flex w-full flex-row justify-between gap-4">
-        <div className="h-screen w-1/4 flex-col justify-between">
+      <NavBar />
+  
+      <div className="flex w-5/6 mx-auto flex-grow justify-between">
+        {/* Left Column */}
+        <div className="flex h-full w-1/4 flex-col justify-between">
           <ChannelControl />
+
+          {/* Empty space for alignment */}
+          <div></div>
+
           <HomeControl />
         </div>
-        <div className="h-full w-3/5">
+
+        {/* Center Column */}
+        <div className="flex h-full w-2/5 flex-col justify-end">
+          {/* Posts at the bottom middle */}
           <PostControl />
         </div>
-        <div>
+
+        {/* Right Column */}
+        <div className="mr-8 flex h-full w-1/6 flex-col justify-start">
           <Block>
-            <TextHeaderGeneral text="Nearby Channels" />
+            <TextHeaderGeneral text="Friends" />
           </Block>
           <Block>
-            <TextHeaderGeneral text="Members in this Channel" />
+            <TextHeaderGeneral text="In this Channel" />
             <NearbyControl />
           </Block>
         </div>

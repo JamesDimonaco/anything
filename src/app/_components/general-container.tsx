@@ -19,7 +19,7 @@ const Container: FC<{ className?: string, children: React.ReactNode, style?: CSS
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className={`container w-screen h-screen overflow-hidden mx-auto ${className}`}
+      className={`graphic-container w-screen h-screen overflow-hidden mx-auto ${className}`}
       style={style}
     >
       {children}
