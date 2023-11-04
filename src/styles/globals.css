@@ -38,19 +38,14 @@ html {
 
 .container {
   color: #fff;
-  box-shadow: 0 4px 15px rgba(255, 65, 108, 0.2);
   transition: background-color 0.15s ease-out;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
 }
 
 
 .container:hover {
   background-image: radial-gradient(
     circle at var(--x) var(--y),
-    rgba(109, 105, 110, 0.1) 0%,
+    rgba(98, 152, 188, 0.637) 0%,
     transparent 1000px
   );
 }
@@ -62,4 +57,25 @@ html {
   to {
     background-position: 0 0;
   }
+}
+
+.slide-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-border::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: white;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.slide-border:hover::before {
+  transform: translateY(0);
 }

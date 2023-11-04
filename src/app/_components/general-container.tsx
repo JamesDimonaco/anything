@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, FC, useRef } from "react";
+import { type CSSProperties, type FC, useRef } from "react";
 
 const Container: FC<{ className?: string, children: React.ReactNode, style?: CSSProperties; }> = ({ className, children, style }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -19,7 +19,7 @@ const Container: FC<{ className?: string, children: React.ReactNode, style?: CSS
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className={`container w-screen h-screen mx-auto ${className}`}
+      className={`container w-screen h-screen overflow-hidden mx-auto ${className}`}
       style={style}
     >
       {children}

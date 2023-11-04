@@ -1,16 +1,17 @@
 interface ButtonGeneralProps {
-    label: string;
+    label?: string;
+    type?: "button" | "submit" | "reset" | undefined;
     children: React.ReactNode;
-    onClick: () => void;
+    onClick?: () => void;
     className: string;
 }
 
 const ButtonGeneral = (props: ButtonGeneralProps) => {
     const { label, onClick, className, children } = props;
     return (
-        <button 
-        
-        className={`${className} max-w-4`}
+        <button
+        type={props.type ?? "button"}
+        className={`${className}`}
          onClick={onClick}>
         {label}
         {children}
