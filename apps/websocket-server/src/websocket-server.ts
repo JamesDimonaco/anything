@@ -27,6 +27,7 @@ interface NotificationMessage {
 interface NotifyUpdateRequest {
   channelId: string;
   userId?: string; // Make userId optional if not always needed
+  latestPost: string;
 }
 
 interface ExtendedWebSocket extends WebSocket {
@@ -70,34 +71,34 @@ wss.on("connection", (ws) => {
               // For example, you might save the channelId to the WebSocket object
               const extendedWs = ws as ExtendedWebSocket;
               extendedWs.channelId = receivedMessage.channelId;
-              try {
-                const posts = await pool.query(
-                  `SELECT p.*, 
-       json_build_object(
-           'id', u."id",
-           'email', u."email",
-           'name', u."name",
-           'image', u."image",
-           'emailVerified', u."emailVerified",
-           'status', u."status",
-           'currentChannelId', u."currentChannelId",
-           'homeChannelId', u."homeChannelId"
-       ) AS "createdBy"
-      FROM "Post" as p
-      JOIN "User" as u ON p."createdById" = u."id"
-      WHERE p."channelId" = $1;
-`,
-                  [receivedMessage.channelId],
-                );
-                console.log(
-                  JSON.stringify(posts.rows),
-                  "-----------------------------------",
-                );
+              //               try {
+              //                 const posts = await pool.query(
+              //                   `SELECT p.*,
+              //        json_build_object(
+              //            'id', u."id",
+              //            'email', u."email",
+              //            'name', u."name",
+              //            'image', u."image",
+              //            'emailVerified', u."emailVerified",
+              //            'status', u."status",
+              //            'currentChannelId', u."currentChannelId",
+              //            'homeChannelId', u."homeChannelId"
+              //        ) AS "createdBy"
+              //       FROM "Post" as p
+              //       JOIN "User" as u ON p."createdById" = u."id"
+              //       WHERE p."channelId" = $1;
+              // `,
+              //                   [receivedMessage.channelId],
+              //                 );
+              //                 console.log(
+              //                   JSON.stringify(posts.rows),
+              //                   "-----------------------------------",
+              //                 );
 
-                ws.send(JSON.stringify(posts.rows)); // Send the posts back to the client
-              } catch (error) {
-                ws.send(`Error: ${(error as Error).message}`);
-              }
+              //                 ws.send(JSON.stringify(posts.rows)); // Send the posts back to the client
+              //               } catch (error) {
+              //                 ws.send(`Error: ${(error as Error).message}`);
+              //               }
 
               break;
             // Add cases for other actions like 'unsubscribe', etc.
@@ -122,35 +123,14 @@ wss.on("connection", (ws) => {
 
 // Endpoint for notifying about updates
 app.post("/notify-update", async (req: Request, res: Response) => {
-  const { channelId } = req.body as NotifyUpdateRequest; // Cast the body to your type
+  const { channelId, latestPost, userId } = req.body as NotifyUpdateRequest; // Cast the body to your type
 
-  console.log("here ------------------------");
   console.log(channelId);
+  console.log(latestPost);
 
   console.log(`Received notification about update for channel ${channelId}.`);
 
   try {
-    const updatedPosts = await pool.query(
-      `SELECT p.*, 
-       json_build_object(
-           'id', u."id",
-           'email', u."email",
-           'name', u."name",
-           'image', u."image",
-           'emailVerified', u."emailVerified",
-           'status', u."status",
-           'currentChannelId', u."currentChannelId",
-           'homeChannelId', u."homeChannelId"
-       ) AS "createdBy"
-      FROM "Post" as p
-      JOIN "User" as u ON p."createdById" = u."id"
-      WHERE p."channelId" = $1;
-`,
-      [channelId],
-    );
-
-    console.log(updatedPosts.rows);
-
     // Make sure to cast the client to your ExtendedWebSocket if needed
     wss.clients.forEach((client: WebSocket) => {
       const extendedClient = client as ExtendedWebSocket; // Cast to ExtendedWebSocket
@@ -158,12 +138,12 @@ app.post("/notify-update", async (req: Request, res: Response) => {
         extendedClient.readyState === WebSocket.OPEN &&
         extendedClient.channelId === channelId
       ) {
-        extendedClient.send(JSON.stringify(updatedPosts.rows));
+        extendedClient.send(JSON.stringify(latestPost));
       }
     });
 
     console.log("Updated posts sent to subscribed clients.");
-    res.status(200).json({ success: true, output: updatedPosts.rows });
+    res.status(200).json({ success: true, latestPost });
   } catch (error) {
     console.error("Error sending updated posts:", error);
     res

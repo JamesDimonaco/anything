@@ -1,13 +1,23 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { CreatePost } from "../_components/create-post";
 import PostBlock from "./block-post";
-import { demoPost } from "./utilities-post";
-import type { Post } from "@prisma/client";
+import type { Post as PostWithUser, User } from "@prisma/client";
 
-function ClientPostSocket({ channel }) {
-  const [posts, setPosts] = useState<Post[]>([]); // Start with an empty array
-  const channelId = channel?.currentChannelId; // This should be the id, not currentChannelId
+interface Post extends PostWithUser {
+  createdBy: User;
+}
+interface Channel {
+  posts: Post[];
+  currentChannelId: number;
+}
+
+interface ClientPostSocketProps {
+  channel: Channel;
+}
+
+function ClientPostSocket({ channel }: ClientPostSocketProps) {
+  const [posts, setPosts] = useState<Post[]>(channel.posts); // Start with an empty array
+  const channelId: number = channel.currentChannelId;
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8080");
@@ -17,29 +27,24 @@ function ClientPostSocket({ channel }) {
       // Subscribe to the channel updates
       const message = {
         action: "subscribe", // for example, if the server expects an action property
-        channelId: channelId,
+        channelId,
       };
       console.log("Sending message:", message);
 
       socket.send(JSON.stringify(message));
     };
 
-    const onMessage = (event) => {
-      console.log("WebSocket Message:", event);
-
+    const onMessage = (event: MessageEvent) => {
       try {
-        const data = JSON.parse(event.data);
-        console.log("WebSocket Message:", data);
-        console.log("WebSocket Message:", data[0]);
-
+        const latestPost: Post = JSON.parse(event.data as string) as Post;
         // Assuming the server sends an array of posts as updates
-        setPosts(data);
+        setPosts((posts) => [...posts, latestPost]);
       } catch (error) {
         console.error("Error parsing message data as JSON:", error);
       }
     };
 
-    const onError = (event) => {
+    const onError = (event: Event) => {
       console.error("WebSocket Error:", event);
     };
 
@@ -64,8 +69,6 @@ function ClientPostSocket({ channel }) {
       socket.close();
     };
   }, [channelId]);
-
-  console.log(posts);
 
   return (
     <div className="w-full max-w-xs">

@@ -14,7 +14,6 @@ import { ZodError } from "zod";
 import axios from "axios";
 import { getServerAuthSession } from "../../server/auth";
 import { db } from "../../server/db";
-import { Post } from "@prisma/client";
 
 /**
  * 1. CONTEXT
@@ -143,11 +142,11 @@ export const withCurrentChannel = t.middleware(async ({ ctx, next }) => {
   });
 });
 
-export const updateWebsocket = t.middleware(async ({ ctx, next }) => {
+export const updateWebsocket = t.middleware(async ({ ctx, next, input }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-
+  const { name } = input as { name: string };
   const url = process.env.WEBSOCKET_URL;
   if (!url) {
     console.error(
@@ -159,12 +158,38 @@ export const updateWebsocket = t.middleware(async ({ ctx, next }) => {
     where: { id: ctx.session!.user.id },
     select: { currentChannelId: true },
   });
-  const channelId = user?.currentChannelId;
-  const userId = ctx.session.user.id;
+
+  if (!user) return next({ ctx });
+
+  const createdPost = {
+    // ... include other post fields you have from the creation result
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    name,
+    // You won't have the ID before it's created in the DB, so it might have to be omitted or handled differently
+    // id: ???,
+    createdById: ctx.session.user.id,
+    channelId: user?.currentChannelId, // assuming you got this from the db query
+  };
+
+  const postCreatedByUser = {
+    id: ctx.session.user.id,
+    name: ctx.session.user.name,
+    email: ctx.session.user.email,
+    image: ctx.session.user.image,
+    currentChannelId: user.currentChannelId,
+  };
+
+  const postWithCreatedBy = {
+    ...createdPost,
+    createdBy: postCreatedByUser,
+  };
+
   try {
     const notifyResponse = await axios.post(`${url}/notify-update`, {
-      channelId,
-      userId,
+      channelId: user?.currentChannelId,
+      userId: ctx.session.user.id,
+      latestPost: postWithCreatedBy, // pass the constructed object here
     });
     console.log(
       "updateWebsocket: WebSocket server notified successfully",
@@ -187,47 +212,6 @@ export const updateWebsocket = t.middleware(async ({ ctx, next }) => {
     },
   });
 });
-
-// export const updateWebsocket = t.middleware(async ({ ctx, next }) => {
-//   if (!ctx.session || !ctx.session.user) {
-//     throw new TRPCError({ code: "UNAUTHORIZED" });
-//   }
-//   console.log(ctx);
-
-//   const url = process.env.WEBSOCKET_URL;
-//   if (!url) {
-//     console.error(
-//       "updateWebsocket: WEBSOCKET_URL is not defined in the environment variables.",
-//     );
-//     return;
-//   }
-
-//   console.log("we are here and are good ");
-
-// Attempt to notify the WebSocket server
-// try {
-//   const notifyResponse = await axios.post(`${url}/notify-update`);
-//   console.log(
-//     "updateWebsocket: WebSocket server notified successfully",
-//     notifyResponse.data,
-//   );
-// } catch (error) {
-//   console.error(
-//     "updateWebsocket: Error notifying the WebSocket server:",
-//     error,
-//   );
-//   // You may choose to throw the error or handle it differently depending on your needs.
-// }
-
-//   return next({
-//     ctx: {
-//       session: {
-//         ...ctx.session,
-//         user: ctx.session.user,
-//       },
-//     },
-//   });
-// });
 
 /**
  * Protected (authenticated) procedure

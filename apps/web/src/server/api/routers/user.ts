@@ -5,7 +5,10 @@ export const userRouter = createTRPCRouter({
     // we need the messages for this channel as well for Home
     return ctx.db.user.findUnique({
       where: { id: ctx.session.user.id },
-      select: { currentChannelId: true, posts: { include: { createdBy: true } } },
+      select: {
+        currentChannelId: true,
+        posts: { include: { createdBy: true } },
+      },
     });
   }),
   getOwnChannelId: protectedProcedure.query(({ ctx }) => {
