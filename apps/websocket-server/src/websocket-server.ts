@@ -72,10 +72,27 @@ wss.on("connection", (ws) => {
               extendedWs.channelId = receivedMessage.channelId;
               try {
                 const posts = await pool.query(
-                  'SELECT * FROM "Post" WHERE "channelId" = $1',
+                  `SELECT p.*, 
+       json_build_object(
+           'id', u."id",
+           'email', u."email",
+           'name', u."name",
+           'image', u."image",
+           'emailVerified', u."emailVerified",
+           'status', u."status",
+           'currentChannelId', u."currentChannelId",
+           'homeChannelId', u."homeChannelId"
+       ) AS "createdBy"
+      FROM "Post" as p
+      JOIN "User" as u ON p."createdById" = u."id"
+      WHERE p."channelId" = $1;
+`,
                   [receivedMessage.channelId],
                 );
-                console.log(JSON.stringify(posts.rows));
+                console.log(
+                  JSON.stringify(posts.rows),
+                  "-----------------------------------",
+                );
 
                 ws.send(JSON.stringify(posts.rows)); // Send the posts back to the client
               } catch (error) {
@@ -114,7 +131,21 @@ app.post("/notify-update", async (req: Request, res: Response) => {
 
   try {
     const updatedPosts = await pool.query(
-      'SELECT * FROM "Post" WHERE "channelId" = $1',
+      `SELECT p.*, 
+       json_build_object(
+           'id', u."id",
+           'email', u."email",
+           'name', u."name",
+           'image', u."image",
+           'emailVerified', u."emailVerified",
+           'status', u."status",
+           'currentChannelId', u."currentChannelId",
+           'homeChannelId', u."homeChannelId"
+       ) AS "createdBy"
+      FROM "Post" as p
+      JOIN "User" as u ON p."createdById" = u."id"
+      WHERE p."channelId" = $1;
+`,
       [channelId],
     );
 
@@ -132,7 +163,7 @@ app.post("/notify-update", async (req: Request, res: Response) => {
     });
 
     console.log("Updated posts sent to subscribed clients.");
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, output: updatedPosts.rows });
   } catch (error) {
     console.error("Error sending updated posts:", error);
     res

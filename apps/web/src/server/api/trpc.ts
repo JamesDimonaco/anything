@@ -125,7 +125,6 @@ export const withCurrentChannel = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-
   const user = await ctx.db.user.findUnique({
     where: { id: ctx.session!.user.id },
     select: { currentChannelId: true },

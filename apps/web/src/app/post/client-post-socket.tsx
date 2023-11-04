@@ -30,6 +30,7 @@ function ClientPostSocket({ channel }) {
       try {
         const data = JSON.parse(event.data);
         console.log("WebSocket Message:", data);
+        console.log("WebSocket Message:", data[0]);
 
         // Assuming the server sends an array of posts as updates
         setPosts(data);
@@ -64,6 +65,8 @@ function ClientPostSocket({ channel }) {
     };
   }, [channelId]);
 
+  console.log(posts);
+
   return (
     <div className="w-full max-w-xs">
       {posts.length > 0 ? (
@@ -80,4 +83,4 @@ function ClientPostSocket({ channel }) {
   );
 }
 
-export default PostControl;
+export default ClientPostSocket;
