@@ -1,15 +1,35 @@
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
-  getCurrentChannel: protectedProcedure.query(({ ctx }) => {
-    // we need the messages for this channel as well for Home
-    return ctx.db.user.findUnique({
+  getCurrentChannel: protectedProcedure.query(async ({ ctx }) => {
+    // Get the current user with their currentChannelId
+    const userWithChannel = await ctx.db.user.findUnique({
       where: { id: ctx.session.user.id },
       select: {
         currentChannelId: true,
-        posts: { include: { createdBy: true } },
       },
     });
+
+    if (!userWithChannel?.currentChannelId) {
+      // If user doesn't have a current channel, return an empty array
+      return {
+        currentChannelId: 420,
+        posts: [],
+      };
+    }
+
+    // Check if user has a current channel set, and if so, retrieve the posts for that channel
+    return {
+      currentChannelId: userWithChannel.currentChannelId,
+      posts: await ctx.db.post.findMany({
+        where: {
+          channelId: userWithChannel.currentChannelId,
+        },
+        include: {
+          createdBy: true,
+        },
+      }),
+    };
   }),
   getOwnChannelId: protectedProcedure.query(({ ctx }) => {
     return ctx.db.user.findUnique({

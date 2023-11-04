@@ -18,6 +18,7 @@ interface ClientPostSocketProps {
 function ClientPostSocket({ channel }: ClientPostSocketProps) {
   const [posts, setPosts] = useState<Post[]>(channel.posts); // Start with an empty array
   const channelId: number = channel.currentChannelId;
+  console.log(channel.posts, channel.currentChannelId);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8080");
