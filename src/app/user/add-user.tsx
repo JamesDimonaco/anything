@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { api } from "../../trpc/react";
+import { api } from "~/trpc/react";
 
-export function CreatePost() {
+export function AddUser() {
   const router = useRouter();
   const [name, setName] = useState("");
 
-  const createPost = api.post.create.useMutation({
+  const addUser = api.user.friendRequest.useMutation({
     onSuccess: () => {
       router.refresh();
       setName("");

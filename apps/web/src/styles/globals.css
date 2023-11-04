@@ -36,17 +36,17 @@ html {
   pointer-events: none;
 }
 
-.container {
+.graphic-container {
   color: #fff;
   transition: background-color 0.15s ease-out;
 }
 
 
-.container:hover {
+.graphic-container:hover {
   background-image: radial-gradient(
     circle at var(--x) var(--y),
-    rgba(98, 152, 188, 0.637) 0%,
-    transparent 1000px
+    rgba(35, 90, 127, 0.319) 0%,
+    transparent 4000px
   );
 }
 

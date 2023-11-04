@@ -1,12 +1,12 @@
 import "../styles/globals.css";
 
-import { Inter } from "next/font/google";
+import { Raleway } from "next/font/google";
 import { headers } from "next/headers";
 
 import { TRPCReactProvider } from "../trpc/react";
 import { Providers } from "./provider";
 
-const inter = Inter({
+const raleway = Raleway({
   subsets: ["latin"],
   variable: "--font-sans",
 });
@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable} bg-black w-screen`}>
+      <body className={`font-sans ${raleway.variable} bg-black`}>
         <TRPCReactProvider headers={headers()}>
           <Providers>{children}</Providers>
         </TRPCReactProvider>

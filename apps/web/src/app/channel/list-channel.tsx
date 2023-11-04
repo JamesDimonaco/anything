@@ -16,8 +16,8 @@ const Channels = ({ currentChannelId, channels}: ChannelsProps) => {
 
 
   return (
-    <Block className="h-96 font-bold bg-white bg-opacity-5">
-    <div className="flex-col justify-between items-center text-white/80 px-4 py-2">
+    <Block className="h-96 bg-opacity-5">
+    <div className="flex-col justify-between items-center text-white/80">
       <TextHeaderGeneral text="Channels" />
       {stateChannels.length > 0 ? (
         <div>
