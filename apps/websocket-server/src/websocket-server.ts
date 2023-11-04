@@ -125,10 +125,6 @@ wss.on("connection", (ws) => {
 app.post("/notify-update", async (req: Request, res: Response) => {
   const { channelId, latestPost, userId } = req.body as NotifyUpdateRequest; // Cast the body to your type
 
-  console.log(channelId);
-  console.log(latestPost);
-
-  console.log(`Received notification about update for channel ${channelId}.`);
 
   try {
     // Make sure to cast the client to your ExtendedWebSocket if needed

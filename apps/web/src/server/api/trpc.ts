@@ -166,8 +166,10 @@ export const updateWebsocket = t.middleware(async ({ ctx, next, input }) => {
     createdAt: new Date(),
     updatedAt: new Date(),
     name,
-    // You won't have the ID before it's created in the DB, so it might have to be omitted or handled differently
-    // id: ???,
+    //! this is a string id and it is temporary
+    id:
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15),
     createdById: ctx.session.user.id,
     channelId: user?.currentChannelId, // assuming you got this from the db query
   };
@@ -191,6 +193,12 @@ export const updateWebsocket = t.middleware(async ({ ctx, next, input }) => {
       userId: ctx.session.user.id,
       latestPost: postWithCreatedBy, // pass the constructed object here
     });
+
+    console.log(
+      "updateWebsocket: WebSocket server notified successfully",
+      notifyResponse.data,
+    );
+
     console.log(
       "updateWebsocket: WebSocket server notified successfully",
       notifyResponse.data,

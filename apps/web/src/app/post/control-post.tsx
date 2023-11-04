@@ -20,10 +20,7 @@ async function PostControl() {
     throw new Error("Current channel is null");
   }
 
-  // Now TypeScript knows currentChannelResponse is not null
   const currentChannel: Channel = currentChannelResponse;
-
-  console.log("currentChannel", currentChannel);
 
   return (
     <Block className="w-full">
