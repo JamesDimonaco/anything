@@ -48,3 +48,6 @@ yarn-error.log*
 # turbo repo
 .turbo
 
+# docker
+/apps/*/docker-compose.yaml
+
