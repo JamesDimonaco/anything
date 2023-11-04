@@ -1,18 +1,18 @@
 import Link from "next/link";
-import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import Block from "./_components/general-block";
 import Container from "./_components/general-container";
-import ChannelBlock from "./channel/block-channel";
-import PostBlock from "./post/block-post";
-import { createOwnChannel } from "./channel/actions-channel";
 import HomeBlock from "./home/block-home";
+import ChannelControl from "./channel/control-channels";
+import PostControl from "./post/control-post";
+import NearbyControl from "./nearby/nearby-control";
+import Image from "next/image";
 
 const NavBar = async () => {
   const session = await getServerAuthSession();
   return (
-    <div className="flex h-max w-full items-center justify-between bg-black/50 px-4 py-2 text-white/80">
+    <div className="flex h-max w-5/6 items-center rounded-xl justify-between bg-opacity-10 bg-gradient-to-br from-gray-900 border-gray-400 border-3 px-4 py-2 text-white/80">
       <div className="flex gap-4">
         <Link href="/">
           <p className="text-white/80 transition hover:text-white">Project Y</p>
@@ -37,139 +37,59 @@ const NavBar = async () => {
 
 export default async function Home() {
   const session = await getServerAuthSession();
+  
   if (!session?.user)
     return (
-      <div className="bg-black font-mono">
-        <Container>
+        <Container style={{ position: 'relative' }}>
+          <Image
+            placeholder="blur"
+            priority
+            className="absolute top-0 left-0 w-full h-screen object-cover z-0 bg-opacity-10"
+            src="/streaksbg.png" 
+            alt="Project Y" 
+            layout="fill"
+          />
           <NavBar />
         </Container>
-      </div>
     );
 
   const currentChannel = await api.user.getCurrentChannel.query();
 
   return (
-    <div className="bg-black font-mono">
-      <Container>
+    <>
+            <Image
+          placeholder="blur"
+          blurDataURL="/streaks1kbg.png"
+          priority
+          className="absolute top-0 left-0 w-full h-screen object-cover z-0 bg-opacity-10"
+          src="/streaksbg.png" 
+          alt="Project Y" 
+          layout="fill"
+        />
+        <div className="absolute top-0 left-0 w-full h-screen object-cover z-0 bg-opacity-10 bg-gradient-to-bl from-gray-900"></div>
+      <Container style={{ position: 'relative' }}>
+    <div className="w-full flex justify-center mt-4">
         <NavBar />
-        <div className="flex flex-row gap-4">
+        </div>
+        <div className="flex flex-row gap-4 z-10">
           <div>
-            <Block>
               <ChannelControl />
-            </Block>
             <HomeBlock channel={currentChannel} />
           </div>
           <Block>
-            Chat
-            <PostControl />
+            Chatting in 
+            <PostControl channel={currentChannel} />
           </Block>
           <Block>
             Members
-            <MembersInChannel />
+            <NearbyControl />
           </Block>
         </div>
       </Container>
-    </div>
+      </>
   );
 }
 
-async function MembersInChannel() {
-  let members;
 
-  try {
-    const userData = await api.user.getCurrentChannel.query();
-    const data = await api.channel.getMembers.query({
-      channelId: userData?.currentChannelId ?? 420,
-    });
 
-    members = data ? data.members : null;
-  } catch (error) {
-    console.error("Failed to fetch members", error);
-    members = null;
-  }
 
-  if (!members) {
-    return <p>No members found or an error occurred.</p>;
-  }
-
-  return (
-    <div>
-      {members.map((member) => (
-        <div key={member.id}>
-          <p>{member.name}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-async function ChannelControl() {
-  let publicChannels;
-  let ownChannel;
-  let currentChannelId: number;
-
-  try {
-    publicChannels = await api.channel.getPublic.query();
-    ownChannel =
-      (await api.channel.getOwn.query()) ?? (await createOwnChannel());
-
-    const currentChannelData = await api.user.getCurrentChannel.query();
-    if (!currentChannelData) {
-      throw new Error("Current channel data is null");
-    }
-    currentChannelId = currentChannelData.currentChannelId;
-  } catch (error) {
-    console.error("Failed to fetch channel data", error);
-    // You should decide how to handle this error case
-    // Maybe set the variables to defaults or return a special error component
-    return <p>Error loading channels.</p>;
-  }
-
-  return (
-    <>
-      {ownChannel && (
-        <ChannelBlock
-          currentChannelId={currentChannelId}
-          channel={ownChannel}
-        />
-      )}
-      {publicChannels && publicChannels.length > 0 ? (
-        <div>
-          <p className="truncate">here are all your channels</p>
-          <ul>
-            {publicChannels.map((channel) => (
-              <ChannelBlock
-                currentChannelId={currentChannelId}
-                channel={channel}
-                key={channel.id}
-              />
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <p>You have no channels yet.</p>
-      )}
-    </>
-  );
-}
-
-async function PostControl() {
-  const posts = await api.post.getAll.query();
-
-  return (
-    <div className="w-full max-w-xs">
-      {posts.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          <p>Your posts:</p>
-          {posts.map((post) => (
-            <PostBlock key={post.id} post={post} />
-          ))}
-        </div>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
-
-      <CreatePost />
-    </div>
-  );
-}
