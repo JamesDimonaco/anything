@@ -11,9 +11,10 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-
+import axios from "axios";
 import { getServerAuthSession } from "../../server/auth";
 import { db } from "../../server/db";
+import { Post } from "@prisma/client";
 
 /**
  * 1. CONTEXT
@@ -121,22 +122,113 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 
 /** Middleware to extend ctx to include the users current channel */
 export const withCurrentChannel = t.middleware(async ({ ctx, next }) => {
-  if(!ctx.session || !ctx.session.user) {
+  if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
   const user = await ctx.db.user.findUnique({
     where: { id: ctx.session!.user.id },
-    select: { currentChannelId: true},
+    select: { currentChannelId: true },
   });
 
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user, currentChannelId: user?.currentChannelId },
-      currentChannelId: user?.currentChannelId
+      session: {
+        ...ctx.session,
+        user: ctx.session.user,
+        currentChannelId: user?.currentChannelId,
+      },
+      currentChannelId: user?.currentChannelId,
     },
   });
 });
+
+export const updateWebsocket = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const url = process.env.WEBSOCKET_URL;
+  if (!url) {
+    console.error(
+      "updateWebsocket: WEBSOCKET_URL is not defined in the environment variables.",
+    );
+  }
+
+  const user = await ctx.db.user.findUnique({
+    where: { id: ctx.session!.user.id },
+    select: { currentChannelId: true },
+  });
+  const channelId = user?.currentChannelId;
+  const userId = ctx.session.user.id;
+  try {
+    const notifyResponse = await axios.post(`${url}/notify-update`, {
+      channelId,
+      userId,
+    });
+    console.log(
+      "updateWebsocket: WebSocket server notified successfully",
+      notifyResponse.data,
+    );
+  } catch (error) {
+    console.error(
+      "updateWebsocket: Error notifying the WebSocket server:",
+      error,
+    );
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: {
+        ...ctx.session,
+        user: ctx.session.user,
+      },
+    },
+  });
+});
+
+// export const updateWebsocket = t.middleware(async ({ ctx, next }) => {
+//   if (!ctx.session || !ctx.session.user) {
+//     throw new TRPCError({ code: "UNAUTHORIZED" });
+//   }
+//   console.log(ctx);
+
+//   const url = process.env.WEBSOCKET_URL;
+//   if (!url) {
+//     console.error(
+//       "updateWebsocket: WEBSOCKET_URL is not defined in the environment variables.",
+//     );
+//     return;
+//   }
+
+//   console.log("we are here and are good ");
+
+// Attempt to notify the WebSocket server
+// try {
+//   const notifyResponse = await axios.post(`${url}/notify-update`);
+//   console.log(
+//     "updateWebsocket: WebSocket server notified successfully",
+//     notifyResponse.data,
+//   );
+// } catch (error) {
+//   console.error(
+//     "updateWebsocket: Error notifying the WebSocket server:",
+//     error,
+//   );
+//   // You may choose to throw the error or handle it differently depending on your needs.
+// }
+
+//   return next({
+//     ctx: {
+//       session: {
+//         ...ctx.session,
+//         user: ctx.session.user,
+//       },
+//     },
+//   });
+// });
 
 /**
  * Protected (authenticated) procedure
