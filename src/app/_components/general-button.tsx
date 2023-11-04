@@ -2,7 +2,7 @@ interface ButtonGeneralProps {
     label?: string;
     type?: "button" | "submit" | "reset" | undefined;
     children: React.ReactNode;
-    onClick?: () => void;
+    onClick?: (e?: any) => void;
     className: string;
 }
 

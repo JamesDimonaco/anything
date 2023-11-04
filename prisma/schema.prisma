@@ -84,7 +84,50 @@ model User {
   status           String?
   currentChannelId Int       @default(420)
   homeChannelId    Int       @default(420)
+  sentFriendRequests   Friendship[] @relation("sent")
+  receivedFriendRequests Friendship[] @relation("received")
+  notifications         Notification[]
 }
+
+model Friendship {
+  id          Int      @id @default(autoincrement())
+  userAId     String   // One side of the friendship
+  userBId     String   // The other side
+  status      FriendshipStatus // e.g. PENDING, ACCEPTED, DECLINED, BLOCKED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userA       User     @relation(name: "sent",fields: [userAId], references: [id])
+  userB       User     @relation(name:"received",fields: [userBId], references: [id])
+
+  @@index([userAId, userBId], name: "idx_userA_userB")
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      String   // Who the notification is for
+  type        NotificationType // e.g. FRIEND_REQUEST
+  content     String   // e.g. "John Doe sent you a friend request!"
+  link        String?  // Any specific link related to this notification
+  seen        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+enum NotificationType {
+  FRIEND_REQUEST
+  // Add other types as necessary
+}
+
 
 model VerificationToken {
   identifier String

@@ -24,12 +24,14 @@ const PostBlock = ({
   return (
     <div className="flex w-full justify-between">
       <p className="text-white/80 transition hover:text-white">
-        <span className="uppercase text-xs border p-1 rounded-xl">{timeSince(post.createdAt.toISOString())}</span> 
-        
         <span className="font-bold"> {post.createdBy.name}</span>: <span className="">{post.name}</span>
       </p>
+      <div className="flex">
+              <span className="uppercase text-gray-300 text-sm p-1 rounded-xl">{timeSince(post.createdAt.toISOString())}</span> 
+        
       {/* delete button */}
       <DeletePost post={post} />
+      </div>
     </div>
   );
 };

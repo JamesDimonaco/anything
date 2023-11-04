@@ -19,7 +19,7 @@ const Block: FC<{ className?: string, children: React.ReactNode }> = ({ classNam
     <div
       ref={blockRef}
       onMouseMove={handleMouseMove}
-      className={`block border-opacity-10 w-full h-max border-2 m-4 px-4 py-2 ${className}`}
+      className={`block border-blue-900 border-opacity-60 w-full h-max border my-2 px-4 py-2 ${className}`}
     >
       {children}
     </div>

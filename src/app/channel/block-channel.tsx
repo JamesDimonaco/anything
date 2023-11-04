@@ -2,7 +2,13 @@
 
 import type { Channel } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { api } from "~/trpc/react";
 import ButtonGeneral from "../_components/general-button";
 
@@ -27,25 +33,35 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({
   const join = api.channel.join.useMutation({
     onSuccess: () => {
       console.log("success");
-      setActive(true);
-      router.refresh();
       setCurrentChannelId(channel.id);
+      router.refresh();
     },
   });
+  const formRef = useRef<HTMLFormElement>(null); // Create a ref for the form
 
   return (
     <form
+      ref={formRef}
       onSubmit={(e) => {
+              setActive(true);
         e.preventDefault();
         const channelId = channel.id;
         join.mutate({ channelId });
       }}
     >
-      <li
+      <button
+        type="submit"
         key={channel?.id}
-        onClick={() => {
-          setCurrentChannelId(channel.id);
-          setActive(true);
+        onClick={(e) => {
+          e.stopPropagation(); 
+          console.log(formRef);
+          
+          
+          
+          if (formRef.current) {
+            console.log("submitting");
+            formRef.current.submit();
+          }
         }}
         className={`
             ${active ? "bg-white/10" : "border-none"}
@@ -53,9 +69,7 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({
              hover:border-opacity-100 hover:bg-white/10`}
       >
         {channel?.name}
-        <ButtonGeneral
-          onClick={() => setActive(true)}
-          type="submit"
+        <div
           className={`
 
         ${active ? "bg-green-500" : "bg-blue-500"}
@@ -92,8 +106,8 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({
               />
             </svg>
           )}
-        </ButtonGeneral>
-      </li>
+        </div>
+      </button>
     </form>
   );
 };
