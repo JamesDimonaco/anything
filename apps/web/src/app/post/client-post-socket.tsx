@@ -29,14 +29,18 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
         action: "subscribe", // for example, if the server expects an action property
         channelId,
       };
-      console.log("Sending message:", message);
-
       socket.send(JSON.stringify(message));
     };
 
     const onMessage = (event: MessageEvent) => {
       try {
-        const latestPost: Post = JSON.parse(event.data as string) as Post;
+        let latestPost: Post = JSON.parse(event.data as string) as Post;
+        latestPost = {
+          ...latestPost,
+          createdAt: new Date(latestPost.createdAt),
+          updatedAt: new Date(latestPost.updatedAt),
+        };
+
         // Assuming the server sends an array of posts as updates
         setPosts((posts) => [...posts, latestPost]);
       } catch (error) {

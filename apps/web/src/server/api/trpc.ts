@@ -163,8 +163,8 @@ export const updateWebsocket = t.middleware(async ({ ctx, next, input }) => {
 
   const createdPost = {
     // ... include other post fields you have from the creation result
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
     name,
     // You won't have the ID before it's created in the DB, so it might have to be omitted or handled differently
     // id: ???,
