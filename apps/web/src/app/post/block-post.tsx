@@ -1,17 +1,35 @@
 import type { Post } from "@prisma/client";
-import Link from "next/link";
+import { DeletePost } from "./delete-post";
+import { timeSince } from "../channel/utilities-channel";
 
-const PostBlock = ({ post }: { post: Post }) => {
+const PostBlock = ({
+  post,
+}: {
+  post: {
+    createdAt: Date;
+    name: string;
+    id: number;
+    createdBy: {
+      id: string;
+      name: string | null;
+      email: string | null;
+      emailVerified: Date | null;
+      image: string | null;
+      status: string | null;
+      currentChannelId: number;
+      homeChannelId: number;
+    };
+  };
+}) => {
   return (
-    <div className="flex w-full justify-between items-center bg-white/5 text-white/80 px-4 py-2">
-      <p className="text-white/80 hover:text-white transition mr-16">{post.name}</p>
-      <div className="w-32">
-      </div>
-      <Link href={`/posts/${post.id}`}>
-        <p className="text-white/80 hover:text-white transition">Delete</p>
-      </Link>
+    <div className="flex w-full justify-between">
+      <p className="text-white/80 transition hover:text-white">
+        {timeSince(post.createdAt.toISOString())} {post.createdBy.name}: {post.name}
+      </p>
+      {/* delete button */}
+      <DeletePost post={post} />
     </div>
   );
-}
+};
 
 export default PostBlock;

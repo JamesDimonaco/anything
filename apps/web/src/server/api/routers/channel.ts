@@ -22,8 +22,13 @@ export const channelRouter = createTRPCRouter({
     return ctx.db.channel.findFirst({
       where: { authorId: ctx.session.user.id },
       include: {
-        members: true,
-      },
+        posts: {
+          orderBy: { createdAt: "desc" },
+          include: {
+            createdBy: true,
+          },
+        },
+    },
     });
   }),
   createOwn: protectedProcedure.mutation(async ({ ctx }) => {

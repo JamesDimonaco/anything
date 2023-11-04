@@ -26,11 +26,8 @@ async function ChannelControl() {
 
   return (
     <>
-      <Channels
-        currentChannelId={currentChannelId}
-        channels={publicChannels}
-        ownChannel={ownChannel}
-      />
+      <Channels currentChannelId={currentChannelId} channels={publicChannels} />
+      
     </>
   );
 }
