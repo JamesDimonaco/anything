@@ -1,8 +1,8 @@
 'use client';
 
-import { FC, useRef } from "react";
+import { CSSProperties, FC, useRef } from "react";
 
-const Container: FC<{ className?: string, children: React.ReactNode }> = ({ className, children }) => {
+const Container: FC<{ className?: string, children: React.ReactNode, style?: CSSProperties; }> = ({ className, children, style }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -20,6 +20,7 @@ const Container: FC<{ className?: string, children: React.ReactNode }> = ({ clas
       ref={containerRef}
       onMouseMove={handleMouseMove}
       className={`container w-screen h-screen mx-auto ${className}`}
+      style={style}
     >
       {children}
     </div>

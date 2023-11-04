@@ -4,6 +4,7 @@ import type { Channel } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { api } from "~/trpc/react";
+import ButtonGeneral from "../_components/general-button";
 
 interface ChannelBlockProps {
   channel: Channel
@@ -42,14 +43,14 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({ channel, currentChannelId, 
     >
     <li key={channel?.id} className="flex w-72  h-36 justify-between text-xl">
       {channel?.name}
-      <button
+      <ButtonGeneral
       type="submit"
         className={`
         ${active ? "bg-green-500" : "bg-blue-500"}
         rounded bg-blue-500 h-max px-4 text-lg font-bold text-white hover:bg-blue-700`}
       >
         {active ? "Joined" : "Join"}
-      </button>
+      </ButtonGeneral>
     </li>
     </form>
   );

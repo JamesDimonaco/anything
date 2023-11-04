@@ -9,7 +9,6 @@ html {
 .block {
   color: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(16, 77, 175, 0.4);
   transition: background-color 0.15s ease-out;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -24,26 +23,17 @@ html {
   position: absolute;
   top: 0;
   left: 0;
-  animation: slideGradient 5s linear infinite;
   right: 0;
   bottom: 0;
   background: repeating-linear-gradient(
     45deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.1) 10px,
+    rgba(24, 24, 24, 0.1),
+    rgba(56, 56, 56, 0.1) 10px,
     transparent 10px,
     transparent 20px
   );
   opacity: 0.5;
   pointer-events: none;
-}
-
-.block:hover {
-  background-image: radial-gradient(
-    circle at var(--x) var(--y),
-    #0e2d5e 0%,
-    transparent 1000px
-  );
 }
 
 .container {
@@ -60,7 +50,7 @@ html {
 .container:hover {
   background-image: radial-gradient(
     circle at var(--x) var(--y),
-    #0e2d5e 0%,
+    rgba(109, 105, 110, 0.1) 0%,
     transparent 1000px
   );
 }

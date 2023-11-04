@@ -18,16 +18,7 @@ const Channels = ({ currentChannelId, channels, ownChannel}: ChannelsProps) => {
 
   return (
     <Block className="h-96 font-bold text-2xl bg-white bg-opacity-5">
-    <div className="flex-col justify-between items-center bg-black/50 text-white/80 px-4 py-2">
-       <p>My Channel: {currentStateChannelId}</p>
-      {ownChannel && (
-        <div>
-          <ul>
-            <ChannelBlock setCurrentChannelId={setStateCurrentChannelId} currentChannelId={currentStateChannelId} channel={ownStateChannel}
-             />
-          </ul>
-        </div>
-      )}
+    <div className="flex-col justify-between items-center text-white/80 px-4 py-2">
       <p>All Channels</p>
       {stateChannels.length > 0 ? (
         <div>
