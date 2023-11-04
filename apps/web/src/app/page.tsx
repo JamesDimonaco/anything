@@ -8,6 +8,7 @@ import ChannelBlock from "./channel/block-channel";
 import PostBlock from "./post/block-post";
 import { createOwnChannel } from "./channel/actions-channel";
 import HomeBlock from "./home/block-home";
+import PostControl from "./post/post-control";
 
 const NavBar = async () => {
   const session = await getServerAuthSession();
@@ -61,7 +62,7 @@ export default async function Home() {
           </div>
           <Block>
             Chat
-            <PostControl />
+            <PostControl channel={currentChannel} />
           </Block>
           <Block>
             Members
@@ -150,26 +151,5 @@ async function ChannelControl() {
         <p>You have no channels yet.</p>
       )}
     </>
-  );
-}
-
-async function PostControl() {
-  const posts = await api.post.getAll.query();
-
-  return (
-    <div className="w-full max-w-xs">
-      {posts.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          <p>Your posts:</p>
-          {posts.map((post) => (
-            <PostBlock key={post.id} post={post} />
-          ))}
-        </div>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
-
-      <CreatePost />
-    </div>
   );
 }

@@ -7,8 +7,10 @@ dotenv.config();
 
 const PORT = 8080;
 
+console.log("Connecting to database...");
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL + "?sslmode=require",
 });
 
 interface QueryMessage {
