@@ -1,13 +1,6 @@
 import Link from "next/link";
 import { getServerAuthSession } from "../server/auth";
-import Block from "./_components/general-block";
 import Container from "./_components/general-container";
-import ChannelControl from "./channel/control-channels";
-import PostControl from "./post/control-post";
-import NearbyControl from "./user/nearby-control";
-import TextHeaderGeneral from "./_components/general-text-header";
-import HomeControl from "./home/control-home";
-import NavBar from "./_components/general-navbar";
 
 export default async function Home() {
   const session = await getServerAuthSession();
