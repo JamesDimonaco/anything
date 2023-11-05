@@ -8,7 +8,7 @@ export function CreatePost() {
 
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
-      setName("");
+      console.log("Post created");
     },
   });
 
@@ -17,6 +17,7 @@ export function CreatePost() {
       onSubmit={(e) => {
         e.preventDefault();
         createPost.mutate({ name });
+        setName("");
       }}
       className="flex flex-col gap-2"
     >
