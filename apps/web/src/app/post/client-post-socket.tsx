@@ -23,7 +23,7 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
   useEffect(() => {
     const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
 
-    const socket = new WebSocket(`ws://${websocketUrl}`);
+    const socket = new WebSocket(`${websocketUrl}`);
 
     const onOpen = () => {
       console.log("WebSocket Connection opened");
