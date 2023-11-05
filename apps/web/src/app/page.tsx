@@ -13,10 +13,12 @@ import HomeControl from "./home/control-home";
 const NavBar = async () => {
   const session = await getServerAuthSession();
   return (
-    <div className="border-2 flex h-max w-5/6 mx-auto items-center justify-between rounded-xl border-white px-4 py-2 my-2">
+    <div className="mx-auto my-2 flex h-max w-5/6 items-center justify-between rounded-xl border-2 border-white px-4 py-2">
       <div className="flex gap-4">
         <Link href="/">
-          <p className="text-white/80 transition hover:text-white">Y Message | Simple, Free, Forever.</p>
+          <p className="text-white/80 transition hover:text-white">
+            Y Message | Simple, Free, Forever.
+          </p>
         </Link>
       </div>
       <p className="text-center text-2xl text-white">
@@ -55,29 +57,29 @@ export default async function Home() {
     );
 
   return (
-    <Container className="flex h-screen flex-col bg-black">
-
+    <Container className="flex h-full flex-col bg-black">
       <NavBar />
-  
-      <div className="flex w-5/6 mx-auto flex-grow justify-between">
+
+      <div
+        className="mx-auto grid w-5/6 grid-cols-1
+                   gap-4 overflow-y-auto md:grid-cols-2
+                   lg:grid-cols-3"
+      >
         {/* Left Column */}
-        <div className="flex h-full w-1/4 flex-col justify-between">
+        <div className="flex flex-col justify-between">
           <ChannelControl />
-
-          {/* Empty space for alignment */}
           <div></div>
-
           <HomeControl />
         </div>
 
-        {/* Center Column */}
-        <div className="flex h-full w-2/5 flex-col justify-end">
+        {/* Center Column for tablets and big screens only */}
+        <div className="flex-col justify-end md:flex">
           {/* Posts at the bottom middle */}
           <PostControl />
         </div>
 
-        {/* Right Column */}
-        <div className="mr-8 flex h-full w-1/6 flex-col justify-start">
+        {/* Right Column for big screens only */}
+        <div className="flex-col justify-start lg:flex">
           <Block>
             <TextHeaderGeneral text="Friends" />
           </Block>

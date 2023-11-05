@@ -81,7 +81,7 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
   }, [channelId]);
 
   return (
-    <div className="w-full max-w-xs">
+    <div className="w-full">
       {posts.length > 0 ? (
         <div className="flex flex-col gap-2">
           <p>Your posts:</p>

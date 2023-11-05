@@ -36,11 +36,6 @@ html {
   pointer-events: none;
 }
 
-.graphic-container {
-  color: #fff;
-  transition: background-color 0.15s ease-out;
-}
-
 
 .graphic-container:hover {
   background-image: radial-gradient(
