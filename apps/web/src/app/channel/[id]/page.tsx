@@ -9,12 +9,11 @@ export default function ChannelPage({ params }: { params: { id: string } }) {
   return (
     <>
       {/* Center Column for tablets and big screens only */}
-      <div className="h-full flex-col md:flex">
-        {/* Posts at the bottom middle */}
-        <Block>
-          <PostControl channelId={channelId} />
-        </Block>
-      </div>
+
+      {/* Posts at the bottom middle */}
+      <Block>
+        <PostControl channelId={channelId} />
+      </Block>
 
       {/* Right Column for big screens only */}
       <div className="h-full flex-col lg:flex">
@@ -25,6 +24,8 @@ export default function ChannelPage({ params }: { params: { id: string } }) {
           <TextHeaderGeneral text="In this Channel" />
           <NearbyControl />
         </Block>
+
+        <div className="flex-grow"></div>
 
         <Block>
           <TextHeaderGeneral text="Notifications" />

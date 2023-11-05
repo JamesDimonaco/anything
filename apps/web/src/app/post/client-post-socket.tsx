@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PostBlock from "./block-post";
 import type { Post as PostWithUser, User } from "@prisma/client";
 import { useSession } from "next-auth/react";
@@ -18,6 +18,12 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
   const session = useSession();
   const channelId: number = channel.id;
 
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [posts]);
+
   useEffect(() => {
     const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
 
@@ -34,15 +40,8 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
     };
 
     const onMessage = (event: MessageEvent) => {
-      console.log(event);
-
       try {
-        console.log("tr");
-
         const data = JSON.parse(event.data as string) as Post | number;
-
-        console.log(data);
-
         if (typeof data === "number") {
           console.log("Number");
           console.log(data);
@@ -107,6 +106,7 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
       ) : (
         <p>You have no posts yet.</p>
       )}
+      <div ref={bottomRef} />
     </div>
   );
 }
