@@ -146,20 +146,13 @@ export const WebsocketPost = t.middleware(async ({ ctx, next, input }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  const { name } = input as { name?: string };
+  const { name, channelId } = input as { name: string; channelId: number };
   const url = process.env.WEBSOCKET_SERVER_URL;
   if (!url) {
     console.error(
       "updateWebsocket: WEBSOCKET_SERVER_URL is not defined in the environment variables.",
     );
   }
-
-  const user = await ctx.db.user.findUnique({
-    where: { id: ctx.session!.user.id },
-    select: { currentChannelId: true },
-  });
-
-  if (!user) return next({ ctx });
 
   const createdPost = {
     // ... include other post fields you have from the creation result
@@ -171,7 +164,7 @@ export const WebsocketPost = t.middleware(async ({ ctx, next, input }) => {
       Math.random().toString(36).substring(2, 15) +
       Math.random().toString(36).substring(2, 15),
     createdById: ctx.session.user.id,
-    channelId: user?.currentChannelId, // assuming you got this from the db query
+    channelId: channelId, // assuming you got this from the db query
   };
 
   const postCreatedByUser = {
@@ -179,7 +172,7 @@ export const WebsocketPost = t.middleware(async ({ ctx, next, input }) => {
     name: ctx.session.user.name,
     email: ctx.session.user.email,
     image: ctx.session.user.image,
-    currentChannelId: user.currentChannelId,
+    currentChannelId: channelId,
   };
 
   const postWithCreatedBy = {
@@ -189,7 +182,7 @@ export const WebsocketPost = t.middleware(async ({ ctx, next, input }) => {
 
   try {
     const notifyResponse = await axios.post(`${url}/notify-update`, {
-      channelId: user?.currentChannelId,
+      channelId: channelId,
       userId: ctx.session.user.id,
       latestPost: postWithCreatedBy, // pass the constructed object here
     });
@@ -220,7 +213,7 @@ export const WebsocketDelete = t.middleware(async ({ ctx, next, input }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  const { id } = input as { id: number };
+  const { id, channelId } = input as { id: number; channelId: number };
   const url = process.env.WEBSOCKET_SERVER_URL;
   if (!url) {
     console.error(
@@ -228,16 +221,9 @@ export const WebsocketDelete = t.middleware(async ({ ctx, next, input }) => {
     );
   }
 
-  const user = await ctx.db.user.findUnique({
-    where: { id: ctx.session!.user.id },
-    select: { currentChannelId: true },
-  });
-
-  if (!user) return next({ ctx });
-
   try {
     const notifyResponse = await axios.post(`${url}/notify-delete`, {
-      channelId: user?.currentChannelId,
+      channelId: channelId,
       userId: ctx.session.user.id,
       postId: id,
     });

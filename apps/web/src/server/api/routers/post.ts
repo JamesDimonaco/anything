@@ -11,17 +11,18 @@ import {
 
 export const postRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
+    .input(z.object({ name: z.string().min(1), channelId: z.number() }))
     .use(WebsocketPost)
     .use(withCurrentChannel)
     .mutation(async ({ ctx, input }) => {
       const name: string = input.name;
+      const channelId: number = input.channelId;
 
       return ctx.db.post.create({
         data: {
           name,
           createdBy: { connect: { id: ctx.session.user.id } },
-          channel: { connect: { id: ctx.session.currentChannelId } },
+          channel: { connect: { id: channelId } },
         },
       });
     }),

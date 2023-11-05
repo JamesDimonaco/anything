@@ -13,7 +13,7 @@ const HomeBlock: React.FC<HomeBlockProps> = ({ channel }) => {
     <Block className="px-4 py-2 text-white/80">
       <TextHeaderGeneral text={"My Channel"} />
       <ClientHomeSocket channel={channel} />
-      <CreatePost />
+      <CreatePost channelId={channel.id} />
     </Block>
   );
 };

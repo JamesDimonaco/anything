@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { api } from "../../trpc/react";
 
-export function CreatePost() {
+export function CreatePost({ channelId }: { channelId: number }) {
   const [name, setName] = useState("");
 
   const createPost = api.post.create.useMutation({
@@ -16,7 +16,7 @@ export function CreatePost() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost.mutate({ name });
+        createPost.mutate({ name, channelId });
         setName("");
       }}
       className="flex flex-col gap-2"

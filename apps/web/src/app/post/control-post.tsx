@@ -33,7 +33,7 @@ async function PostControl({ channelId }: PostControlProps) {
     <Block className="w-full">
       <TextHeaderGeneral text="Posts" />
       <ClientPostSocket channel={currentChannel} />
-      <CreatePost />
+      <CreatePost channelId={channelId} />
     </Block>
   );
 }
