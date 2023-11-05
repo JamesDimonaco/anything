@@ -1,15 +1,4 @@
-"use client";
-
 import type { Channel } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
-import { api } from "../../trpc/react";
 import Link from "next/link";
 
 interface ChannelBlockProps {
@@ -21,28 +10,9 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({
   channel,
   currentChannelId,
 }) => {
-  const [active, setActive] = useState(channel.id === currentChannelId);
-  const router = useRouter();
-
-  const join = api.channel.join.useMutation({
-    onSuccess: () => {
-      console.log("success");
-      setCurrentChannelId(channel.id);
-      router.refresh();
-    },
-  });
-  const formRef = useRef<HTMLFormElement>(null); // Create a ref for the form
+  const active = channel.id === currentChannelId;
 
   return (
-    // <form
-    //   ref={formRef}
-    // onSubmit={(e) => {
-    //   setActive(true);
-    //   e.preventDefault();
-    //   const channelId = channel.id;
-    //   join.mutate({ channelId });
-    // }}
-    // >
     <Link
       key={channel.id}
       href={`/channel/${channel.id}`}
@@ -91,7 +61,6 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({
         )}
       </div>
     </Link>
-    // </form>
   );
 };
 
