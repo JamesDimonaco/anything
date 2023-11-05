@@ -26,5 +26,9 @@ export default async function Home() {
       </Container>
     );
 
-  return <Container className="flex h-full flex-col bg-black"></Container>;
+  return (
+    <Container className="flex h-full flex-col bg-black">
+      <></>
+    </Container>
+  );
 }
