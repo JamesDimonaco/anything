@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { api } from "../../trpc/react";
 import type { Post } from "@prisma/client";
 
@@ -9,10 +8,9 @@ interface DeletePostProps {
 }
 
 export function DeletePost({ post }: DeletePostProps) {
-  const router = useRouter();
   const deletePost = api.post.delete.useMutation({
     onSuccess: () => {
-      router.refresh();
+      console.log("Post deleted", post);
     },
   });
 

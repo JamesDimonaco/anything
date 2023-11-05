@@ -38,18 +38,31 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
     };
 
     const onMessage = (event: MessageEvent) => {
+      console.log(event);
+
       try {
         console.log("tr");
 
-        let latestPost: Post = JSON.parse(event.data as string) as Post;
+        const data = JSON.parse(event.data as string) as Post | number;
+
+        console.log(data);
+
+        if (typeof data === "number") {
+          console.log("Number");
+          console.log(data);
+          setPosts((posts) => posts.filter((post) => post.id !== data));
+
+          return;
+        }
+
+        let latestPost: Post = data;
+
         latestPost = {
           ...latestPost,
           createdAt: new Date(latestPost.createdAt),
           updatedAt: new Date(latestPost.updatedAt),
         };
-        console.log(latestPost);
 
-        // Assuming the server sends an array of posts as updates
         setPosts((posts) => [...posts, latestPost]);
       } catch (error) {
         console.error("Error parsing message data as JSON:", error);

@@ -15,18 +15,15 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL + "?sslmode=require",
 });
 
-interface QueryMessage {
-  query: string;
-  params?: unknown[];
-}
-
-interface NotificationMessage {
-  type: string;
+interface NotifyDeleteRequest {
+  postId: number;
+  channelId: string;
+  userId?: string;
 }
 
 interface NotifyUpdateRequest {
   channelId: string;
-  userId?: string; // Make userId optional if not always needed
+  userId?: string;
   latestPost: string;
 }
 
@@ -154,6 +151,42 @@ app.post("/notify-update", async (req: Request, res: Response) => {
 
     console.log("Updated posts sent to subscribed clients.");
     res.status(200).json({ success: true, latestPost });
+  } catch (error) {
+    console.error("Error sending updated posts:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to send updated posts." });
+  }
+});
+
+app.post("/notify-delete", async (req: Request, res: Response) => {
+  const { channelId, postId } = req.body as NotifyDeleteRequest; // Cast the body to your type
+
+  try {
+    console.log("Sending delete request to subscribed clients.");
+    console.log("channelId", channelId);
+
+    console.log(postId);
+
+    // Make sure to cast the client to your ExtendedWebSocket if needed
+    wss.clients.forEach((client: WebSocket) => {
+      const extendedClient = client as ExtendedWebSocket; // Cast to ExtendedWebSocket
+
+      console.log(extendedClient.readyState, extendedClient.channelId);
+
+      if (
+        extendedClient.readyState === WebSocket.OPEN &&
+        extendedClient.channelId === channelId
+      ) {
+        console.log("Sending message to client.");
+        console.log("######################");
+
+        extendedClient.send(JSON.stringify(postId));
+      }
+    });
+
+    console.log("Updated posts sent to subscribed clients.");
+    res.status(200).json({ success: true, postId });
   } catch (error) {
     console.error("Error sending updated posts:", error);
     res

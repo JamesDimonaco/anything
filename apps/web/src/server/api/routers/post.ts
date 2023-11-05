@@ -3,14 +3,16 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
-  updateWebsocket,
+  publicProcedure,
+  WebsocketPost,
+  WebsocketDelete,
   withCurrentChannel,
 } from "../../../server/api/trpc";
 
 export const postRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
-    .use(updateWebsocket)
+    .use(WebsocketPost)
     .use(withCurrentChannel)
     .mutation(async ({ ctx, input }) => {
       const name: string = input.name;
@@ -25,6 +27,7 @@ export const postRouter = createTRPCRouter({
     }),
   delete: protectedProcedure
     .input(z.object({ id: z.number() }))
+    .use(WebsocketDelete)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.post.delete({
         where: { id: input.id },
