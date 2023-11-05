@@ -21,7 +21,9 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
   console.log(channel.posts, channel.currentChannelId);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080");
+    const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
+
+    const socket = new WebSocket(`ws://${websocketUrl}`);
 
     const onOpen = () => {
       console.log("WebSocket Connection opened");
@@ -35,12 +37,15 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
 
     const onMessage = (event: MessageEvent) => {
       try {
+        console.log("tr");
+
         let latestPost: Post = JSON.parse(event.data as string) as Post;
         latestPost = {
           ...latestPost,
           createdAt: new Date(latestPost.createdAt),
           updatedAt: new Date(latestPost.updatedAt),
         };
+        console.log(latestPost);
 
         // Assuming the server sends an array of posts as updates
         setPosts((posts) => [...posts, latestPost]);

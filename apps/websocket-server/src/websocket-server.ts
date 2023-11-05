@@ -125,15 +125,29 @@ wss.on("connection", (ws) => {
 app.post("/notify-update", async (req: Request, res: Response) => {
   const { channelId, latestPost, userId } = req.body as NotifyUpdateRequest; // Cast the body to your type
 
-
   try {
+    console.log("Sending updated posts to subscribed clients.");
+    console.log("channelId", channelId);
+
+    console.log(latestPost);
+
     // Make sure to cast the client to your ExtendedWebSocket if needed
     wss.clients.forEach((client: WebSocket) => {
+      console.log("client", client);
+
       const extendedClient = client as ExtendedWebSocket; // Cast to ExtendedWebSocket
+
+      console.log(extendedClient);
+
+      console.log(extendedClient.readyState, extendedClient.channelId);
+
       if (
         extendedClient.readyState === WebSocket.OPEN &&
         extendedClient.channelId === channelId
       ) {
+        console.log("Sending message to client.");
+        console.log("######################");
+
         extendedClient.send(JSON.stringify(latestPost));
       }
     });

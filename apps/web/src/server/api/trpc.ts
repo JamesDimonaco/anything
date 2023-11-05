@@ -147,10 +147,10 @@ export const updateWebsocket = t.middleware(async ({ ctx, next, input }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   const { name } = input as { name: string };
-  const url = process.env.WEBSOCKET_URL;
+  const url = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
   if (!url) {
     console.error(
-      "updateWebsocket: WEBSOCKET_URL is not defined in the environment variables.",
+      "updateWebsocket: NEXT_PUBLIC_WEBSOCKET_URL is not defined in the environment variables.",
     );
   }
 
@@ -188,16 +188,11 @@ export const updateWebsocket = t.middleware(async ({ ctx, next, input }) => {
   };
 
   try {
-    const notifyResponse = await axios.post(`${url}/notify-update`, {
+    const notifyResponse = await axios.post(`http://${url}/notify-update`, {
       channelId: user?.currentChannelId,
       userId: ctx.session.user.id,
       latestPost: postWithCreatedBy, // pass the constructed object here
     });
-
-    console.log(
-      "updateWebsocket: WebSocket server notified successfully",
-      notifyResponse.data,
-    );
 
     console.log(
       "updateWebsocket: WebSocket server notified successfully",
