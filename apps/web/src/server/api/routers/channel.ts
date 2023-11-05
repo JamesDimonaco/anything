@@ -23,10 +23,16 @@ export const channelRouter = createTRPCRouter({
       where: { authorId: ctx.session.user.id },
       include: {
         posts: {
-          orderBy: { createdAt: "desc" },
-          include: {
-            createdBy: true,
+          select: {
+            name: true,
+            createdAt: true,
+            createdBy: {
+              select: {
+                name: true,
+              }
+            }
           },
+          orderBy: { createdAt: "desc" },
         },
     },
     });

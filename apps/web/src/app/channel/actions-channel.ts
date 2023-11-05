@@ -26,8 +26,6 @@ export async function getChannels(): Promise<{
 export async function createOwnChannel() {
   const session = await getServerAuthSession();
   if (!session?.user) return demoChannel();
-  const { id } = session.user;
-  console.log("id", id);
   const own = await api.channel.createOwn.mutate();
   await api.user.goHome.mutate();
   return own;

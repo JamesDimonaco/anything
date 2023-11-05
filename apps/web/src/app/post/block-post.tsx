@@ -7,15 +7,16 @@ interface Post extends PostWithUser {
 }
 interface PostBlockInterface {
   post: Post;
+  sessionUserId: string; // Assuming the ID is a string. Adjust if needed.
 }
 
-const PostBlock = ({ post }: PostBlockInterface) => {
+const PostBlock = ({ post, sessionUserId }: PostBlockInterface) => {
+  const isSessionUser = post.createdBy.id === sessionUserId;
   return (
-    <div className="flex w-full justify-between">
-      <p className="text-white/80 transition hover:text-white">
-        {timeSince(post.createdAt)} {post.createdBy.name}: {post.name}{" "}
+    <div className={`flex w-full justify-between ${isSessionUser ? 'bg-blue-700' : 'bg-gray-800'}`}> 
+      <p className={`text-white/80 transition hover:text-white ${isSessionUser ? 'font-bold' : ''}`}>
+        {timeSince(post.createdAt)} {post.createdBy.name}: {post.name}
       </p>
-      {/* delete button */}
       <DeletePost post={post} />
     </div>
   );

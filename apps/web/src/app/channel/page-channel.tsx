@@ -18,8 +18,6 @@ async function ChannelShowcase() {
   if (!session?.user) return null;
 
   const ownChannel = await api.channel.getOwn.query();
-  if (ownChannel) console.log(ownChannel);
-  console.log("loading channels");
 
   return (
     <div className="w-full max-w-xs">

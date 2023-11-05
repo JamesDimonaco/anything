@@ -3,7 +3,6 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
   updateWebsocket,
   withCurrentChannel,
 } from "../../../server/api/trpc";

@@ -54,10 +54,8 @@ const ChannelBlock: React.FC<ChannelBlockProps> = ({
         key={channel?.id}
         onClick={(e) => {
           e.stopPropagation();
-          console.log(formRef);
 
           if (formRef.current) {
-            console.log("submitting");
             formRef.current.submit();
           }
         }}

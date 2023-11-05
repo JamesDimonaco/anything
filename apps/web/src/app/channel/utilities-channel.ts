@@ -12,33 +12,32 @@ export function demoChannel(): Channel {
   };
 }
 
-export const timeSince = (date: Date) => {
-  const now = new Date();
+export const timeSince = (date: Date): string => {
+    const now = new Date();
 
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const intervalDays = Math.floor(seconds / 86400);
 
-  let interval = seconds / 31536000;
-  if (seconds <= 10) return `${seconds} seconds ago`;
+    const padNumber = (num: number): string => num.toString().padStart(2, '0');
 
-  if (seconds <= 30) return `30 seconds ago`;
+    const formattedTime = `${padNumber(date.getHours())}:${padNumber(date.getMinutes())}`;
 
-  interval = seconds / 3600;
-  if (interval >= 1) {
-    if (interval === 1) return `1 hour ago`;
-    return `${Math.floor(interval)} hours ago`;
-  }
+    // If from today
+    if (intervalDays === 0) {
+        return `Today at ${formattedTime}`;
+    }
 
-  interval = seconds / 60;
-  if (interval <= 5) return `${Math.floor(interval)} minutes ago`;
-  if (interval <= 10) return `10 minutes ago`;
-  if (interval <= 15) return `15 minutes ago`;
-  if (interval <= 20) return `20 minutes ago`;
-  if (interval <= 25) return `25 minutes ago`;
-  if (interval <= 30) return `30 minutes ago`;
-  if (interval <= 45) return `45 minutes ago`;
-  if (interval <= 50) return `50 minutes ago`;
+    // If from yesterday
+    if (intervalDays === 1) {
+        return `Yesterday at ${formattedTime}`;
+    }
 
-  interval = seconds / 86400;
-  if (interval <= 1) return `1 day ago`;
-  return `${Math.floor(interval)} days ago`;
+    // If from the same year
+    if (now.getFullYear() === date.getFullYear()) {
+        return `${padNumber(date.getDate())}/${padNumber(date.getMonth() + 1)}/${date.getFullYear()} ${formattedTime}`;
+    }
+
+    // If from a previous year
+    return `${padNumber(date.getDate())}/${padNumber(date.getMonth() + 1)}/${date.getFullYear()}`;
 };
+
