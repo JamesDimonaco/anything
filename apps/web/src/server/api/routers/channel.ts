@@ -30,11 +30,12 @@ export const channelRouter = createTRPCRouter({
               createdAt: true,
               createdBy: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: "asc" },
           },
         },
       });
@@ -49,11 +50,12 @@ export const channelRouter = createTRPCRouter({
             createdAt: true,
             createdBy: {
               select: {
+                id: true,
                 name: true,
               },
             },
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: "asc" },
         },
       },
     });

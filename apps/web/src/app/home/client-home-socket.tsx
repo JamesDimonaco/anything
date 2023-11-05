@@ -18,10 +18,10 @@ function ClientHomeSocket({ channel }: ClientPostSocketProps) {
   const session = useSession();
   const channelId: number = channel.id;
 
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const bottomHomeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomHomeRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [posts]);
 
   useEffect(() => {
@@ -107,7 +107,7 @@ function ClientHomeSocket({ channel }: ClientPostSocketProps) {
       ) : (
         <p>You have no posts yet.</p>
       )}
-      <div ref={bottomRef} />
+      <div ref={bottomHomeRef} />
     </div>
   );
 }

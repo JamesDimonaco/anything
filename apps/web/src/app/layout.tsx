@@ -5,6 +5,8 @@ import { headers } from "next/headers";
 
 import { TRPCReactProvider } from "../trpc/react";
 import { Providers } from "./provider";
+import NavBar from "./_components/general-navbar";
+import { getServerAuthSession } from "../server/auth";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -17,16 +19,21 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerAuthSession();
   return (
     <html lang="en">
       <body className={`font-sans ${raleway.variable} bg-black`}>
         <TRPCReactProvider headers={headers()}>
-          <Providers>{children}</Providers>
+          <Providers>
+            {/* <NavBar session={session} /> */}
+
+            {children}
+          </Providers>
         </TRPCReactProvider>
       </body>
     </html>

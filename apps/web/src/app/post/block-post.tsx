@@ -12,9 +12,18 @@ interface PostBlockInterface {
 
 const PostBlock = ({ post, sessionUserId }: PostBlockInterface) => {
   const isSessionUser = post.createdBy.id === sessionUserId;
+
   return (
-    <div className={`flex w-full justify-between ${isSessionUser ? 'bg-blue-700' : 'bg-gray-800'}`}> 
-      <p className={`text-white/80 transition hover:text-white ${isSessionUser ? 'font-bold' : ''}`}>
+    <div
+      className={`flex w-full justify-between ${
+        isSessionUser ? "bg-blue-700" : "bg-gray-800"
+      }`}
+    >
+      <p
+        className={`text-white/80 transition hover:text-white ${
+          isSessionUser ? "font-bold" : ""
+        }`}
+      >
         {timeSince(post.createdAt)} {post.createdBy.name}: {post.name}
       </p>
       <DeletePost post={post} />
