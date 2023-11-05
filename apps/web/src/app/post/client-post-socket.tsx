@@ -3,13 +3,10 @@ import React, { useEffect, useState } from "react";
 import PostBlock from "./block-post";
 import type { Post as PostWithUser, User } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import type { Channel } from "./control-post";
 
 interface Post extends PostWithUser {
   createdBy: User;
-}
-interface Channel {
-  posts: Post[];
-  currentChannelId: number;
 }
 
 interface ClientPostSocketProps {
@@ -19,8 +16,7 @@ interface ClientPostSocketProps {
 function ClientPostSocket({ channel }: ClientPostSocketProps) {
   const [posts, setPosts] = useState<Post[]>(channel.posts); // Start with an empty array
   const session = useSession();
-  const channelId: number = channel.currentChannelId;
-  console.log(channel.posts, channel.currentChannelId);
+  const channelId: number = channel.id;
 
   useEffect(() => {
     const websocketUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
@@ -96,12 +92,16 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
   }, [channelId]);
 
   return (
-    <div className="w-full h-96 overflow-y-auto">
+    <div className="h-96 w-full overflow-y-auto">
       {posts.length > 0 ? (
         <div className="flex flex-col gap-2">
           <p>Your posts:</p>
           {posts.map((post) => (
-            <PostBlock key={post.id} post={post} sessionUserId={session.data?.user.id ?? "420"} />
+            <PostBlock
+              key={post.id}
+              post={post}
+              sessionUserId={session.data?.user.id ?? "420"}
+            />
           ))}
         </div>
       ) : (

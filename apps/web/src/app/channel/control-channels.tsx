@@ -1,33 +1,32 @@
+import { getServerAuthSession } from "../../server/auth";
 import { api } from "../../trpc/server";
 import { createOwnChannel } from "./actions-channel";
 import Channels from "./list-channel";
 
-async function ChannelControl() {
+async function ChannelControl({ params }: { params: { id: string } }) {
+  const session = await getServerAuthSession();
+  const channelId = parseInt(params.id);
+
   let publicChannels;
   let ownChannel;
-  let currentChannelId: number;
 
   try {
     publicChannels = await api.channel.getPublic.query();
-    ownChannel =
-      (await api.channel.getOwn.query()) ?? (await createOwnChannel());
+    ownChannel = publicChannels.find(
+      (channel) => channel.authorId === session?.user?.id,
+    );
 
-    const currentChannelData = await api.user.getCurrentChannel.query();
-    if (!currentChannelData) {
-      throw new Error("Current channel data is null");
+    if (!ownChannel) {
+      ownChannel = await createOwnChannel();
     }
-    currentChannelId = currentChannelData.currentChannelId;
   } catch (error) {
     console.error("Failed to fetch channel data", error);
-    // You should decide how to handle this error case
-    // Maybe set the variables to defaults or return a special error component
     return <p>Error loading channels.</p>;
   }
 
   return (
     <>
-      <Channels currentChannelId={currentChannelId} channels={publicChannels} />
-      
+      <Channels currentChannelId={channelId} channels={publicChannels} />
     </>
   );
 }

@@ -18,6 +18,27 @@ export const channelRouter = createTRPCRouter({
       },
     });
   }),
+  getOne: publicProcedure
+    .input(z.object({ id: z.number().min(1) }))
+    .query(({ ctx, input }) => {
+      return ctx.db.channel.findFirst({
+        where: { id: input.id },
+        include: {
+          posts: {
+            select: {
+              name: true,
+              createdAt: true,
+              createdBy: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+            orderBy: { createdAt: "desc" },
+          },
+        },
+      });
+    }),
   getOwn: protectedProcedure.query(({ ctx }) => {
     return ctx.db.channel.findFirst({
       where: { authorId: ctx.session.user.id },
@@ -29,12 +50,12 @@ export const channelRouter = createTRPCRouter({
             createdBy: {
               select: {
                 name: true,
-              }
-            }
+              },
+            },
           },
           orderBy: { createdAt: "desc" },
         },
-    },
+      },
     });
   }),
   createOwn: protectedProcedure.mutation(async ({ ctx }) => {

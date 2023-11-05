@@ -166,8 +166,6 @@ app.post("/notify-delete", async (req: Request, res: Response) => {
     console.log("Sending delete request to subscribed clients.");
     console.log("channelId", channelId);
 
-    console.log(postId);
-
     // Make sure to cast the client to your ExtendedWebSocket if needed
     wss.clients.forEach((client: WebSocket) => {
       const extendedClient = client as ExtendedWebSocket; // Cast to ExtendedWebSocket
@@ -179,13 +177,11 @@ app.post("/notify-delete", async (req: Request, res: Response) => {
         extendedClient.channelId === channelId
       ) {
         console.log("Sending message to client.");
-        console.log("######################");
 
         extendedClient.send(JSON.stringify(postId));
       }
     });
 
-    console.log("Updated posts sent to subscribed clients.");
     res.status(200).json({ success: true, postId });
   } catch (error) {
     console.error("Error sending updated posts:", error);

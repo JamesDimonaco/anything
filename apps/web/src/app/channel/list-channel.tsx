@@ -10,29 +10,29 @@ interface ChannelsProps {
   channels: Channel[];
 }
 
-const Channels = ({ currentChannelId, channels}: ChannelsProps) => {
+const Channels = ({ currentChannelId, channels }: ChannelsProps) => {
   const [stateChannels] = useState<Channel[]>(channels);
-  const [currentStateChannelId, setStateCurrentChannelId] = useState<number>(currentChannelId);
-
 
   return (
     <Block className="h-96 bg-opacity-5">
-    <div className="flex-col justify-between items-center text-white/80">
-      <TextHeaderGeneral text="Channels" />
-      {stateChannels.length > 0 ? (
-        <div>
-          <ul>
-            {channels.map((channel: Channel) => (
-              <ChannelBlock setCurrentChannelId={setStateCurrentChannelId} currentChannelId={currentStateChannelId} channel={channel} key={channel.id} />
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <p>You have no channels yet.</p>
-      )}
-
-    </div>
-
+      <div className="flex-col items-center justify-between text-white/80">
+        <TextHeaderGeneral text="Channels" />
+        {stateChannels.length > 0 ? (
+          <div>
+            <ul>
+              {channels.map((channel: Channel) => (
+                <ChannelBlock
+                  currentChannelId={currentChannelId}
+                  channel={channel}
+                  key={channel.id}
+                />
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p>You have no channels yet.</p>
+        )}
+      </div>
     </Block>
   );
 };
