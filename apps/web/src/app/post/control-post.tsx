@@ -38,4 +38,5 @@ async function PostControl({ channelId }: PostControlProps) {
   );
 }
 
+
 export default PostControl;
