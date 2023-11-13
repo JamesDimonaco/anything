@@ -49,4 +49,9 @@ export const userRouter = createTRPCRouter({
       data: { currentChannelId: ownChannel?.id },
     });
   }),
+  getUser: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.user.findUnique({
+      where: { id: ctx.session.user.id },
+    });
+  }),
 });
