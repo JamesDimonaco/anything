@@ -7,7 +7,9 @@
     "build": "turbo run build --parallel",
     "start": "turbo run start --parallel",
     "studio": "cd apps/web && npx prisma studio",
-    "kill": "(lsof -i tcp:3000 -t; lsof -i tcp:8080 -t) | xargs -r kill -9"
+    "kill": "(lsof -i tcp:3000 -t; lsof -i tcp:8080 -t) | xargs -r kill -9",
+    "3d:tsc": "tsc apps/web/scripts/getAnimations.ts",
+    "3d:run": "node apps/web/scripts/getAnimations.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
@@ -23,14 +25,15 @@
     "@trpc/next": "^10.37.1",
     "@trpc/react-query": "^10.37.1",
     "@trpc/server": "^10.37.1",
+    "lodash": "^4.17.21",
     "next": "^14.0.1",
     "next-auth": "^4.23.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "superjson": "^1.13.1",
-    "zustand": "^4.4.6",
     "three": "^0.158.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zustand": "^4.4.6"
   },
   "workspaces": [
     "apps/*"

@@ -1,68 +1,91 @@
-import { KeyboardEvent, useEffect, useMemo, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { Canvas, extend, useFrame } from "@react-three/fiber";
-import { useGLTF, useAnimations, SoftShadows } from "@react-three/drei";
-import { EffectComposer, TiltShift2 } from "@react-three/postprocessing";
-import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-import { AnimationAction, LoopOnce, SkinnedMesh } from "three";
-import { useSession } from "next-auth/react";
-import { BufferGeometry } from 'three';
+import {
+  useAnimations,
+  SoftShadows,
+  CameraControls,
+  shaderMaterial,
+} from "@react-three/drei";
+import {
+  type Group,
+  type Vector3,
+  type Euler,
+  AnimationAction,
+  AnimationMixer,
+  ShaderMaterial,
+} from "three";
+import { useAvatarLoader } from "./useAvatarLoader";
+import { keyDownHandler } from "./keyHandler";
+import useFollowCamera from "./useFollowCamera";
+import { AvatarAnimationQueueManager } from "./AvatarAnimationQueueManager";
 
-interface CustomGLTF extends GLTF {
-  nodes: {
-    mixamorigHips: THREE.Object3D;
-    Ch03: SkinnedMesh;
-    // Add other nodes here as per your model's structure
-  };
-  materials: {
-    Ch03_Body: THREE.Material;
-    // Define other materials as needed
-  };
-  // Include other properties if needed
-}
 
-function Model() {
-  const { nodes, materials, animations } = useGLTF("/jump.glb") as CustomGLTF
-  const { ref, actions } = useAnimations(animations);
+
+const Model = () => {
+  const avatarRef = useRef<Group>(null);
+  const { nodes, materials, animations } = useAvatarLoader();
+  const { actions } = useAnimations(
+    animations,
+    avatarRef,
+  );
+  const [ avatarAnimationManager ] = useState(new AvatarAnimationQueueManager(new AnimationMixer(avatarRef.current!)));
+  const [charIdle, setCharIdle] = useState(true);
+  const positionRef = useRef([0, -1, 0]);
+  const rotationRef = useRef([0, 0, 0]);
+  const [, setRenderTrigger] = useState({});
+  const moving = useRef(false);
+  const moveSpeed = 1;
+  const rotateSpeed = Math.PI / 4; // Adjust as needed
+  const handleKeyDown = useCallback(
+    (event: globalThis.KeyboardEvent) => {
+      keyDownHandler({event, avatarRef, avatarAnimationManager, actions, positionRef, rotationRef, charIdle, setCharIdle, setRenderTrigger, moveSpeed, rotateSpeed, moving});
+    },
+    [actions, positionRef, rotationRef, charIdle, rotateSpeed, avatarAnimationManager],
+  );
+
+    
 
   useEffect(() => {
-    console.log(actions)
-
-    if(actions.jump) {
-    actions.jump!.reset().play();
-    actions.jump!.paused = false;
-    extend({ BufferGeometry });
-    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.code === "Space") {
-        actions.jump!.paused = false;
-        actions.jump!.clampWhenFinished = true;
-        actions.jump!.loop = LoopOnce;
-      }
-    };
-
-    window.addEventListener("keydown", (event) => handleKeyDown(event));
-    return () => {
-      window.removeEventListener("keydown", (event) => handleKeyDown(event));
-    };
+    if (actions.idle) {
+      // Replace 'idle' with the name of your default pose or animation
+      actions.idle.play();
     }
   }, [actions]);
 
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
   return (
-    <group position={[0, -1, 0]} rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
+    <group
+      ref={avatarRef}
+      position={positionRef.current as unknown as Vector3}
+      rotation={rotationRef.current as unknown as Euler}
+      scale={1}
+    >
       <primitive object={nodes.mixamorigHips} />
       <skinnedMesh
         castShadow
         receiveShadow
-        geometry={nodes.Ch03.geometry}
-        material={materials.Ch03_Body}
-        skeleton={nodes.Ch03.skeleton}
+        geometry={nodes.Ch46.geometry}
+        material={materials.Ch46_body}
+        skeleton={nodes.Ch46.skeleton}
       />
     </group>
   );
 }
 
-export const App = () => (
-  <Canvas shadows gl={{ antialias: false }} camera={{ position: [1, 0.5, 2.5], fov: 50 }}>
-    <ambientLight intensity={0.5} />
+export function App() {
+  return(
+  <Canvas
+    shadows
+    gl={{ antialias: false }}
+    camera={{ position: [1, 0.5, 2.5], fov: 50 }}
+  >
+    <CameraControls />
     <directionalLight
       intensity={2}
       position={[-5, 5, 5]}
@@ -71,33 +94,29 @@ export const App = () => (
       shadow-bias={-0.0001}
     />
     <Model />
-    <mesh rotation={[-0.5 * Math.PI, 0, 0]} position={[0, -1.01, 0]} receiveShadow>
-      <bufferGeometry />
-      <shadowMaterial transparent opacity={0.75} />
-    </mesh>
     <SoftShadows size={40} samples={16} />
-    <EffectComposer disableNormalPass multisampling={4}>
-      <TiltShift2 blur={1} />
-    </EffectComposer>
+
   </Canvas>
-);
+  );
+}
 
 interface DefaultAvatarProps {
   children?: React.ReactNode;
 }
 
 const DefaultAvatar: React.FC<DefaultAvatarProps> = ({ children }) => {
-  const user = useSession().data?.user;
-
   return (
-    <div> {/* Set the container size */}
-      <div className="h-screen"> {/* Adjust for header height */}
+    <div>
+      {" "}
+      {/* Set the container size */}
+      <div className="h-screen">
+        {" "}
+        {/* Adjust for header height */}
         <App />
       </div>
       {children}
     </div>
   );
 };
-
 
 export default DefaultAvatar;
