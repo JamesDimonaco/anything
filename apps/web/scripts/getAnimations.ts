@@ -98,19 +98,10 @@ async function getNewGLTFs(): Promise<GLTF[]> {
 }
 
 async function convertFBXtoGLTF(fileName: string): Promise<GLTF> {
-  // exec the Unix command to convert the file
   //! I opted to move fbx2gltf to my path
-  // clean the file name
   fileName = fileName.replace(/\s/g, "\\ ");
   const command = `fbx2gltf ${DOWNLOADS_PATH}${fileName} -o ${OUTPUT_PATH}${fileName.toLowerCase().replace(".fbx", "")}`;
-  const { stdout, stderr } = await promisify(exec)(command);
-
-  // stdout
-  // Wrote 79823 bytes of glTF to ./{FILE}_out/{FILE}.gltf.
-  // Wrote 1682428 bytes of binary data to ./{FILE}_out/buffer.bin.
-  // the file wont have .fbx anymore
-
-  // restore spaces and remove the .fbx
+  await promisify(exec)(command);
   fileName = fileName.replace(/\\ /g, " ").replace(".fbx", "");
   const fullPath = `${fileName}_out/${fileName}.gltf`;
   const gltf = await getGLTF(fullPath);
@@ -118,8 +109,6 @@ async function convertFBXtoGLTF(fileName: string): Promise<GLTF> {
 }
 
 async function getExistingGLTF(): Promise<GLTF> {
-  console.log(process.cwd());
-
   return await getGLTF("./apps/web/public/gltf/char.gltf");
 }
 

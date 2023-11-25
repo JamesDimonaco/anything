@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from 'next-auth/react';
-import DefaultAvatar from '../avatar/defaultAvatar';
+import DefaultAvatar from '../avatar/dashboardAvatars';
 
 interface DashboardContainerProps {
   children?: React.ReactNode;
@@ -15,6 +15,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({ children }) => 
         {user?.name}
       </div>
       <DefaultAvatar />
+
       {children}
       <footer className="absolute bottom-0 bg-black bg-opacity-20 p-5 backdrop-blur-md w-screen shadow-lg ">
        color picker
