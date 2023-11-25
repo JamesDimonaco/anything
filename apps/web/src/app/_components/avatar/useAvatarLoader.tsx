@@ -17,7 +17,16 @@ type AvatarNames = "default" | "system" | "char1" | "char2" | "char3" | "char4";
  
 export const useAvatarLoader = (avatarName: AvatarNames) => {
   const gltf = useGLTF(`/gltf/char.gltf`) as CharGLTF;
-  const { nodes, materials, animations: ogAnimations, scene } =  useMemo(() => gltf, [gltf]);
+  const { nodes, materials, animations: ogAnimations, scene } = useMemo(() => gltf, [gltf]);
+  // Clone the geometry to ensure unique instances for each avatar
+  const clonedNodes = {
+    ...nodes,
+    Ch46: {
+      ...nodes.Ch46,
+      geometry: nodes.Ch46.geometry.clone(),
+    },
+  };
+
   const [animations, setAnimations] = useState(ogAnimations);
 
   useEffect(() => {
@@ -41,7 +50,7 @@ export const useAvatarLoader = (avatarName: AvatarNames) => {
       .catch((error) => console.error("Error loading animations:", error));
   }, [avatarName]);
   
-  return { nodes, materials, animations, scene };
+  return { nodes: clonedNodes, materials, animations, scene };
 };
 
 async function loadGLTFAnim(paths: string[]): Promise<AnimationClip[]> {

@@ -12,24 +12,38 @@ import { RefObject } from "react";
 
 const decayFactor = 0.95; // Adjust this value for desired inertia effect
 let isMoving = false;
-
+let previousAction = "idle";
+const maxSpeed = 10; // Maximum movement speed
+const acceleration = 2; // Acceleration rate
+let currentSpeed = 0; // Current speed of the avatar
 
 export const updateAvatarPosition = (
   currentAction = calculateResultantAction(),
   avatarRef: RefObject<Group<Object3DEventMap>>,
   frameDuration: number,
 ) => {
-  const moveSpeed = 4;
+  const moveSpeed = 7;
   const rotateSpeed = 4.8 * Math.PI; // Adjust as needed
   let { positionDeltaVector, rotationDeltaVector } =
     translateActionToVectors(currentAction);
+
+      // Acceleration and Deceleration Logic
+  if (currentAction !== previousAction) {
+    if (currentAction === "idle") {
+      currentSpeed *= decayFactor; // Decelerate
+    } else {
+      currentSpeed += acceleration * frameDuration; // Accelerate
+    }
+    currentSpeed = Math.min(currentSpeed, maxSpeed); // Cap at max speed
+  }
+
   const { position, rotation } = avatarRef.current!;
   // Calculate new position
   const newPosition = calculateNewPosition(
     positionDeltaVector,
     position,
     rotation,
-    moveSpeed,
+    4*currentSpeed,
     frameDuration,
   );
 
@@ -58,10 +72,11 @@ export const updateAvatarPosition = (
       isMoving = false;
     }
    }
-
+  
   // Apply the new position and rotation to the avatar
   avatarRef.current!.position.set(...newPosition);
   avatarRef.current!.rotation.set(...newRotation);
+  previousAction = currentAction;
 };
 
 // Calculate new position function (example implementation)

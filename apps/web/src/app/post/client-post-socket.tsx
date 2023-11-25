@@ -95,9 +95,9 @@ function ClientPostSocket({ channel }: ClientPostSocketProps) {
       {posts.length > 0 ? (
         <div className="flex flex-col gap-2">
           <p>Your posts:</p>
-          {posts.map((post) => (
+          {posts.map((post, index) => (
             <PostBlock
-              key={post.id}
+              key={index}
               post={post}
               sessionUserId={session.data?.user.id ?? "420"}
             />
