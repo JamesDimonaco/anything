@@ -6,8 +6,8 @@ import {
   useState,
 } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useAnimations, SoftShadows, CameraControls } from "@react-three/drei";
-import { type Group, Vector3, type Euler, type AnimationAction } from "three";
+import { useAnimations, SoftShadows, CameraControls, Circle } from "@react-three/drei";
+import { type Group, Vector3, type Euler, type AnimationAction, LoopPingPong, LoopRepeat } from "three";
 import { useAvatarLoader } from "./useAvatarLoader";
 import { keyDownHandler, keyUpHandler } from "./keyHandler";
 import { updateAvatarPosition } from "./actionVectors";
@@ -42,12 +42,15 @@ const PlayerAvatar = () => {
     lastFrameTime = currentTime; // Update the last frame time
     const avatarPosition = new Vector3();
     playerRef.current?.getWorldPosition(avatarPosition);
+    if(actions[currentAction]) {
+    const elapsed = actions[currentAction]!.time / actions[currentAction]!.getClip().duration
     updateAvatarPosition(
+      elapsed,
       currentAction,
       playerRef,
-
       frameDuration,
     );
+    }
   });
 
   useEffect(() => {
@@ -63,8 +66,13 @@ const PlayerAvatar = () => {
       newAction.timeScale = 0.45;
       // Fade in the new action
       if (newAction === actions.running) {
+        // clip to to only 0.5 seconds
+        newAction.clampWhenFinished = true;
+        newAction.stopFading();
+        // set it so it loops in reverse afte r it's done
+        newAction.loop = LoopRepeat;
         // slow mo
-        newAction.timeScale = 0.25;
+        newAction.timeScale = 1
         // no fade
         newAction.fadeIn(0);
       }
@@ -90,8 +98,6 @@ const PlayerAvatar = () => {
   return (
     <group
       ref={playerRef}
-      position={positionRef.current as unknown as Vector3}
-      rotation={rotationRef.current as unknown as Euler}
       scale={1}
     >
       <primitive object={nodes.mixamorigHips} />
@@ -101,6 +107,12 @@ const PlayerAvatar = () => {
         geometry={nodes.Ch46.geometry}
         material={materials.Ch46_body}
         skeleton={nodes.Ch46.skeleton}
+      />
+      {/* a simple red circle using positionRef */}
+      <Circle
+        args={[0.5, 32]}
+        position={positionRef.current as unknown as Vector3}
+        rotation={[-Math.PI / 2, 0, 0]}
       />
     </group>
   );
