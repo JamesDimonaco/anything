@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerAuthSession } from "../server/auth";
 import Container from "./_components/general-container";
 import DashboardContainer from "./_components/dashboard/container-dashboard";
+import PostControl from "./post/control-post";
 
 
 export default async function Home() {
@@ -19,6 +20,15 @@ export default async function Home() {
             </button>
           </Link>
 
+{/* title */}
+          <h1 className="text-4xl font-bold text-white text-center">
+            Welcome to <span className="text-blue-500">NextAuth.js</span>
+          </h1>
+
+{/* main hero */}
+
+{/* features */}
+
         </div>
       </Container>
     );
@@ -26,7 +36,11 @@ export default async function Home() {
   return (
     <Container className="flex h-full flex-col bg-black">
       <>
+      
       <DashboardContainer />
+            <div className="h-screen absolute bottom-0 z-20 flex-col-reverse">
+            <PostControl channelId={1} />
+      </div>
       </>
     </Container>
   );

@@ -8,7 +8,6 @@ import NavBar from "./_components/general-navbar";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../trpc/server";
 import { userStore } from "./store";
-import TestClient from "./_components/TestClient";
 import StoreInitializer from "./_components/StoreInitializer";
 
 const raleway = Raleway({
@@ -27,11 +26,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerAuthSession();
   const user = await api.user.getUser.query();
   if (user) userStore.setState(user);
 
-  const usersName = userStore.getState().name;
   return (
     <html lang="en">
       {user && (
@@ -49,13 +46,7 @@ export default async function RootLayout({
       <body className={`font-sans ${raleway.variable} bg-black`}>
         <TRPCReactProvider headers={headers()}>
           <Providers>
-            {/* <NavBar session={session} /> */}
-            <div className="flex flex-col gap-2">
-              <h1 className="text-lg text-white">server</h1>
-              <h1 className="text-lg text-white">{usersName}</h1>
-              <TestClient />
               {children}
-            </div>
           </Providers>
         </TRPCReactProvider>
       </body>
